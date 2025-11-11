@@ -1,0 +1,3 @@
+/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles/NebulaChat.dir
+/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles/edit_cache.dir
+/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles/rebuild_cache.dir

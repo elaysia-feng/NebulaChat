@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread -Wall CMakeFiles/NebulaChat.dir/src/main.cpp.o CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o -o NebulaChat 
