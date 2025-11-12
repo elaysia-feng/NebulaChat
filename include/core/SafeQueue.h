@@ -9,6 +9,7 @@ public:
     SafeQueue(int max_event = 1024)
         : max_event_(max_event) {}
 
+    // 阻塞出队；队列空且已 stop 则返回 false
     bool Safepop(T& value) {
         std::unique_lock<std::mutex> lock(mtx_);
         cv_.wait(lock, [&]() {
@@ -20,25 +21,29 @@ public:
 
         value = std::move(queue_.front());
         queue_.pop();
+        // 释放一个可能在“队满”上等待的生产者
+        cv_.notify_one();
         return true;
     }
-
-    bool Safepush(const T& value) {
+    // 方案A：按值接收，支持移动
+    template<class U>
+    bool Safepush(U&& value) {
         std::unique_lock<std::mutex> lock(mtx_);
         cv_.wait(lock, [&]() {
-            return stop_ || queue_.size() < max_event_;
+            return stop_ || max_event_ == 0 || queue_.size() < max_event_;
         });
-
-        if (stop_)
-            return false;
-
-        queue_.push(value);
+        if (stop_) return false;
+        queue_.push(std::forward<U>(value));
         cv_.notify_one();
         return true;
     }
 
-    void SetMaxEvent(int count) {
-        max_event_ = count;
+    void SetMaxEvent(size_t count) {
+        {
+            std::lock_guard<std::mutex> lock(mtx_);
+            max_event_ = count;
+        }
+        cv_.notify_all();
     }
 
     void Stop() {
@@ -53,6 +58,6 @@ private:
     std::queue<T> queue_;
     std::mutex mtx_;
     std::condition_variable cv_;
-    int max_event_{1024};
+    size_t max_event_{1024};
     bool stop_{false};
 };
