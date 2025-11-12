@@ -1,10 +1,10 @@
-// include/Server.h
 #pragma once
+#include "Reactor.h"
 #include <unordered_map>
+#include <memory>
 #include <string>
 #include <mutex>
-#include "Reactor.h"
-#include "ThreadPool.h"
+#include <cstdint>
 
 struct Connection {
     int fd{-1};
@@ -13,17 +13,18 @@ struct Connection {
     bool wantWrite{false};
 };
 
+class ThreadPool; // 可选：若没有线程池，可以不包含实现，只用指针
+
 class Server {
 public:
-    Server(Reactor& r, ThreadPool& p, uint16_t port, bool useET = true);
+    Server(Reactor& r, uint16_t port, bool useET = true, ThreadPool* pool = nullptr);
     ~Server();
 
-    bool start();
-    void stop();
+    bool start();   // 创建监听并注册到 Reactor
+    void stop();    // 停止监听并关闭所有连接
 
 private:
-    // 统一派发入口（供 Reactor 调用）
-    static void Dispatch(int fd, uint32_t events, void* user);
+    // Reactor 回调入口（用 lambda 绑定到 this）
     void onEvent(int fd, uint32_t events, void* user);
 
     // 具体处理
@@ -33,8 +34,8 @@ private:
     void closeConn(int fd);
 
     // 业务处理与回写
-    void handleLineAsync(int fd, std::string line);
-    void postWrite(int fd, std::string data); // 线程安全
+    std::string processLine(const std::string& line); // 业务逻辑（示例：echo）
+    void postWrite(int fd, std::string data);         // 可被工作线程调用，线程安全
 
     // 工具
     bool setNonBlock(int fd);
@@ -42,11 +43,12 @@ private:
 
 private:
     Reactor& reactor_;
-    ThreadPool& pool_;
+    ThreadPool* pool_;   // 可为空；为空则在 I/O 线程内直接处理
     int listenfd_{-1};
     uint16_t port_{0};
     bool useET_{true};
 
     std::unordered_map<int, std::unique_ptr<Connection>> conns_;
-    std::mutex conns_mtx_; // 仅在跨线程访问 outbuf/状态时持有
+    std::mutex conns_mtx_; // 保护 conns_ 以及 Connection.outbuf 等跨线程访问
+    std::atomic<bool> running_{false};
 };
