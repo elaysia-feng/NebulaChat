@@ -1,54 +1,84 @@
 #pragma once
-#include "Reactor.h"
+#include "reactor.h"
+#include "ThreadPool.h"
 #include <unordered_map>
-#include <memory>
 #include <string>
-#include <mutex>
-#include <cstdint>
-
-struct Connection {
+struct Connection
+{
     int fd{-1};
     std::string inbuf;
     std::string outbuf;
     bool wantWrite{false};
 };
 
-class ThreadPool; // 可选：若没有线程池，可以不包含实现，只用指针
-
-class Server {
-public:
-    Server(Reactor& r, uint16_t port, bool useET = true, ThreadPool* pool = nullptr);
-    ~Server();
-
-    bool start();   // 创建监听并注册到 Reactor
-    void stop();    // 停止监听并关闭所有连接
-
+class Server
+{
 private:
-    // Reactor 回调入口（用 lambda 绑定到 this）
-    void onEvent(int fd, uint32_t events, void* user);
+/*onEvent 的功能就是：
 
-    // 具体处理
+判断这个事件是不是 listenfd
+
+如果是 listenfd 且可读 → 说明有客户端连接 → 交给 onAccept()
+
+如果是普通 fd → 按 events 类型分别进入：
+
+EPOLLIN → onConnRead()
+
+EPOLLOUT → onConnWrite()
+
+EPOLLERR / EPOLLHUP → closeConn()
+
+它是事件类型 → 函数选择器。*/
+    void onEvent(int fd, uint32_t events, void* user);
+    //处理新连接到来的事件，并把连接纳入 Server 管理。
     void onAccept();
-    void onConnRead(Connection& c);
-    void onConnWrite(Connection& c);
+    //从客户端读取数据、解析数据、交给业务层处理。
+    void onConnRead(Connection& conn);
+    //把 outbuf 里的数据在循环内尽量 write 完
+    void onConnWrite(Connection& conn);
     void closeConn(int fd);
 
-    // 业务处理与回写
-    std::string processLine(const std::string& line); // 业务逻辑（示例：echo）
-    void postWrite(int fd, std::string data);         // 可被工作线程调用，线程安全
+    /*这部分是业务逻辑。
 
-    // 工具
+    真实应用里，这里可以是：
+
+    登录逻辑
+
+    注册逻辑
+
+    JSON 解析
+
+    协议解析
+
+    数据库查询
+
+    游戏逻辑
+
+    聊天室广播 etc.*/
+    std::string processLine(const std::string& line);
+
+    //这是业务线程安全投递“要写的数据”的入口，用状态机和 EPOLLOUT 驱动真正的写回
+    void postWrite(int fd, std::string data);
+
+    //tool
     bool setNonBlock(int fd);
     bool setTcpNoDelay(int fd);
 
 private:
-    Reactor& reactor_;
-    ThreadPool* pool_;   // 可为空；为空则在 I/O 线程内直接处理
-    int listenfd_{-1};
+    reactor& reactor_;
+    ThreadPool* Threadpool_;
+    int listenFd_{-1};
     uint16_t port_{0};
     bool useET_{true};
 
     std::unordered_map<int, std::unique_ptr<Connection>> conns_;
     std::mutex conns_mtx_; // 保护 conns_ 以及 Connection.outbuf 等跨线程访问
     std::atomic<bool> running_{false};
+public:
+    Server(reactor& rect, uint16_t port, bool useET = true, ThreadPool* pool = nullptr);
+    ~Server();
+
+    bool start();   // 创建监听并注册到 Reactor
+    void stop();  // 停止监听并关闭所有连接
 };
+

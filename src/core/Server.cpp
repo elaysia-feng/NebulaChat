@@ -10,76 +10,92 @@
 #include <cstring>
 #include <iostream>
 
-Server::Server(Reactor& r, uint16_t port, bool useET, ThreadPool* pool)
-    : reactor_(r), pool_(pool), port_(port), useET_(useET) {}
+Server::Server(reactor& rect, uint16_t port, bool useET, ThreadPool* pool)
+    : reactor_(rect), Threadpool_(pool), port_(port), useET_(useET) {}
 
-Server::~Server() { stop(); }
+Server::~Server() {
+    stop();
+}
 
 bool Server::start() {
-    //exchange-> return running_(old vale, also say if your running_ == true return true)
-    if (running_.exchange(true)) return true;
+    // running_：防止重复 start，多线程调用时只允许第一个成功
+    bool expected = false;
+    if (!running_.compare_exchange_strong(expected, true)) {
+        // 已经在运行了，直接返回 true
+        return true;
+    }
 
-    listenfd_ = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (listenfd_ < 0) { perror("socket"); return false; }
+    bool ok = false;  // 用于统一收尾
+    do {
+        listenFd_ = ::socket(AF_INET, SOCK_STREAM, 0);
+        if (listenFd_ < 0) {
+            perror("socket");
+            break;
+        }
 
-    int opt = 1;
-    //SO_REUSEADDR = 允许快速重启服务器，不等 TIME_WAIT。
-    ::setsockopt(listenfd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        int opt = 1;
+        ::setsockopt(listenFd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
 #ifdef SO_REUSEPORT
-    //SO_REUSEPORT = 高性能负载均衡，多个线程监听同一个端口。
-    ::setsockopt(listenfd_, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+        ::setsockopt(listenFd_, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 #endif
 
-    if (!setNonBlock(listenfd_)) {
-        std::cerr << "setNonBlock(listenfd) failed\n";
-        ::close(listenfd_);
-        listenfd_ = -1;
-        return false;
+        if (!setNonBlock(listenFd_)) {
+            std::cerr << "setNonBlock(listenFd) failed\n";
+            break;
+        }
+
+        sockaddr_in addr{};
+        addr.sin_family      = AF_INET;
+        addr.sin_port        = htons(port_);
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        // sockaddr_in* -> sockaddr* 只能用 reinterpret_cast
+        if (::bind(listenFd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+            perror("bind");
+            break;
+        }
+
+        // backlog：内核中“已完成握手、等待 accept 的连接队列”长度
+        if (::listen(listenFd_, 128) < 0) {
+            perror("listen");
+            break;
+        }
+
+        // 绑定 Reactor 回调（一般只需要绑定一次）
+        reactor_.setDispatcher([this](int fd, uint32_t events, void* user) {
+            this->onEvent(fd, events, user);
+        });
+
+        if (!reactor_.addFd(listenFd_, EPOLLIN, this)) {
+            std::cerr << "reactor.addFd(listenFd) failed\n";
+            break;
+        }
+
+        std::cout << "Server listening on port " << port_
+                  << " (ET=" << (useET_ ? "on" : "off") << ")\n";
+
+        ok = true;
+    } while (false);
+
+    if (!ok) {
+        if (listenFd_ != -1) {
+            ::close(listenFd_);
+            listenFd_ = -1;
+        }
+        running_.store(false);   // 失败要把 running_ 还原
     }
 
-    sockaddr_in addr{}; 
-    addr.sin_family = AF_INET;
-    addr.sin_port   = htons(port_);
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    if (::bind(listenfd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
-        perror("bind");
-        ::close(listenfd_);
-        listenfd_ = -1;
-        return false;
-    }
-
-    if (::listen(listenfd_, 128) < 0) {
-        perror("listen");
-        ::close(listenfd_);
-        listenfd_ = -1;
-        return false;
-    }
-
-    // 绑定分发回调（建议只设置一次）
-    reactor_.setDispatcher([this](int fd, uint32_t events, void* user) {
-        this->onEvent(fd, events, user);
-    });
-
-    if (!reactor_.addFd(listenfd_, EPOLLIN, this)) {
-        std::cerr << "reactor.addFd(listenfd) failed\n";
-        ::close(listenfd_);
-        listenfd_ = -1;
-        return false;
-    }
-
-    std::cout << "Server listening on port " << port_ 
-              << " (ET=" << (useET_ ? "on" : "off") << ")\n";
-    return true;
+    return ok;
 }
 
 void Server::stop() {
     if (!running_.exchange(false)) return;
 
-    if (listenfd_ != -1) {
-        reactor_.delFd(listenfd_);
-        ::close(listenfd_);
-        listenfd_ = -1;
+    if (listenFd_ != -1) {
+        reactor_.delFd(listenFd_);
+        ::close(listenFd_);
+        listenFd_ = -1;
     }
 
     std::lock_guard<std::mutex> lk(conns_mtx_);
@@ -98,7 +114,7 @@ void Server::onEvent(int fd, uint32_t events, void* user) {
         return;
     }
 
-    if (fd == listenfd_) {
+    if (fd == listenFd_) {
         if (events & EPOLLIN) onAccept();
         return;
     }
@@ -119,13 +135,15 @@ void Server::onEvent(int fd, uint32_t events, void* user) {
 
 void Server::onAccept() {
     for (;;) {
-        sockaddr_in cli{}; socklen_t len = sizeof(cli);
-        int cfd = ::accept(listenfd_, reinterpret_cast<sockaddr*>(&cli), &len);
+        sockaddr_in cli{};
+        socklen_t len = sizeof(cli);
+        int cfd = ::accept(listenFd_, reinterpret_cast<sockaddr*>(&cli), &len);
         if (cfd < 0) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) break; // 全部接完
             perror("accept");
             break;
         }
+
         if (!setNonBlock(cfd)) {
             ::close(cfd);
             continue;
@@ -134,6 +152,7 @@ void Server::onAccept() {
 
         auto conn = std::make_unique<Connection>();
         conn->fd = cfd;
+        Connection* user_ptr = conn.get();
 
         {
             std::lock_guard<std::mutex> lk(conns_mtx_);
@@ -141,12 +160,6 @@ void Server::onAccept() {
         }
 
         // 注册读事件（写事件按需开启）
-        // 注意：用户指针传 Connection*，方便派发时取到
-        Connection* user_ptr = nullptr;
-        {
-            std::lock_guard<std::mutex> lk(conns_mtx_);
-            user_ptr = conns_[cfd].get();
-        }
         if (!reactor_.addFd(cfd, EPOLLIN, user_ptr)) {
             std::lock_guard<std::mutex> lk(conns_mtx_);
             conns_.erase(cfd);
@@ -187,22 +200,9 @@ void Server::onConnRead(Connection& c) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
         pos = nl + 1;
 
-        // 同步处理（示例：echo）。如需异步，改成提交到线程池：
-        if (pool_) {
-            int fd = c.fd;
-            std::string msg = std::move(line);
-            // 假设 ThreadPool 有 submit(fn)
-            // pool_->submit([this, fd, m = std::move(msg)]() mutable {
-            //     auto out = processLine(m);
-            //     postWrite(fd, std::move(out));
-            // });
-            // 这里先直接同步，免得你没接好线程池接口：
-            auto out = processLine(msg);
-            postWrite(fd, std::move(out));
-        } else {
-            auto out = processLine(line);
-            postWrite(c.fd, std::move(out));
-        }
+        // 现在先都同步处理，线程池接好后再改成异步投递
+        auto out = processLine(line);
+        postWrite(c.fd, std::move(out));
     }
 }
 
@@ -255,12 +255,12 @@ void Server::postWrite(int fd, std::string data) {
     if (it == conns_.end()) return; // 连接已关
     Connection& c = *it->second;
 
-    c.outbuf.append(std::move(data));
+    c.outbuf.append(data);
     if (!c.wantWrite) {
         c.wantWrite = true;
-        // 开启写事件；跨线程调用时先唤醒，再修改更稳妥
-        reactor_.wakeup();
+        // 正确顺序：先改 epoll 事件，再唤醒 reactor
         reactor_.modFd(fd, EPOLLIN | EPOLLOUT, &c);
+        reactor_.wakeup();
     }
     // 锁在作用域末尾释放
 }
