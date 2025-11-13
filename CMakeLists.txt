@@ -11,4 +11,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable(NebulaChat
     src/main.cpp
     src/core/ThreadPool.cpp
+    src/core/Reactor.cpp
+    src/core/Server.cpp
 )

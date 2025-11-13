@@ -16,14 +16,17 @@ Server::Server(Reactor& r, uint16_t port, bool useET, ThreadPool* pool)
 Server::~Server() { stop(); }
 
 bool Server::start() {
+    //exchange-> return running_(old vale, also say if your running_ == true return true)
     if (running_.exchange(true)) return true;
 
     listenfd_ = ::socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd_ < 0) { perror("socket"); return false; }
 
     int opt = 1;
+    //SO_REUSEADDR = 允许快速重启服务器，不等 TIME_WAIT。
     ::setsockopt(listenfd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 #ifdef SO_REUSEPORT
+    //SO_REUSEPORT = 高性能负载均衡，多个线程监听同一个端口。
     ::setsockopt(listenfd_, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 #endif
 
