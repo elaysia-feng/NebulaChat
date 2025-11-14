@@ -1,5 +1,4 @@
 #include "core/Server.h"
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -13,93 +12,94 @@
 Server::Server(reactor& rect, uint16_t port, bool useET, ThreadPool* pool)
     : reactor_(rect), Threadpool_(pool), port_(port), useET_(useET) {}
 
-Server::~Server() {
-    stop();
-}
+Server::~Server(){stop();}
 
-bool Server::start() {
-    // running_：防止重复 start，多线程调用时只允许第一个成功
+bool Server::start(){
+    //这个exchange就是去给running赋值的，然后返回的是running没赋值之前的
     bool expected = false;
-    if (!running_.compare_exchange_strong(expected, true)) {
+    if(!running_.compare_exchange_strong(expected, true)){
         // 已经在运行了，直接返回 true
         return true;
     }
+    bool ok = false; // 用于统一收尾
+    do{
+        listenFd_ = socket(AF_INET, SOCK_STREAM, 0);
 
-    bool ok = false;  // 用于统一收尾
-    do {
-        listenFd_ = ::socket(AF_INET, SOCK_STREAM, 0);
-        if (listenFd_ < 0) {
-            perror("socket");
-            break;
-        }
-
+        if(listenFd_ < 0) { perror("socket"); break; }
         int opt = 1;
         ::setsockopt(listenFd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-#ifdef SO_REUSEPORT
+    #ifdef SO_REUSEPORT
         ::setsockopt(listenFd_, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-#endif
-
+    #endif
         if (!setNonBlock(listenFd_)) {
-            std::cerr << "setNonBlock(listenFd) failed\n";
+            std::cerr << "setNonBlock(listenfd) failed\n";
+            ::close(listenFd_);
+            listenFd_ = -1;
+            // 失败走统一收尾逻辑
             break;
         }
-
         sockaddr_in addr{};
-        addr.sin_family      = AF_INET;
-        addr.sin_port        = htons(port_);
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(port_);
         addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        // sockaddr_in* -> sockaddr* 只能用 reinterpret_cast
+       /*static_cast = 合法、安全的转换
+        → “本来就能这样做，编译器帮你检查,
+        但是得有对应类型间的关系，sockaddr_in* -> sockaddr*,明显没有这个关系”
+
+        reinterpret_cast = 野蛮、按字节解释的转换
+        → “我知道风险，我硬要把 A 当 B 用”*/
         if (::bind(listenFd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
             perror("bind");
             break;
         }
-
-        // backlog：内核中“已完成握手、等待 accept 的连接队列”长度
+        //n -> 允许同时连接的客户端数量
         if (::listen(listenFd_, 128) < 0) {
             perror("listen");
             break;
         }
 
-        // 绑定 Reactor 回调（一般只需要绑定一次）
-        reactor_.setDispatcher([this](int fd, uint32_t events, void* user) {
+        // 把监听 fd 加入 epoll，才能收到连接事件
+        if (!reactor_.addFd(listenFd_, EPOLLIN, nullptr)) {
+            std::cerr << "reactor add listenFd_ failed\n";
+            break;
+        }
+        
+        // 绑定分发回调（建议只设置一次）
+        reactor_.setDispatcher([this](int fd, uint32_t events, void* user){
             this->onEvent(fd, events, user);
         });
 
-        if (!reactor_.addFd(listenFd_, EPOLLIN, this)) {
-            std::cerr << "reactor.addFd(listenFd) failed\n";
-            break;
-        }
-
         std::cout << "Server listening on port " << port_
                   << " (ET=" << (useET_ ? "on" : "off") << ")\n";
-
         ok = true;
-    } while (false);
+    }while (false);
 
-    if (!ok) {
-        if (listenFd_ != -1) {
+    if(!ok){
+        if(listenFd_ != -1){
+            reactor_.delFd(listenFd_);
             ::close(listenFd_);
             listenFd_ = -1;
         }
-        running_.store(false);   // 失败要把 running_ 还原
+        running_.store(false); // 失败要把 running_ 还原
     }
-
     return ok;
 }
 
-void Server::stop() {
-    if (!running_.exchange(false)) return;
 
-    if (listenFd_ != -1) {
+
+void Server::stop(){
+    // 如果之前已经是 false，说明本来就没在跑，直接返回
+    if(!running_.exchange(false)) return;
+
+    if (listenFd_ != -1){
         reactor_.delFd(listenFd_);
         ::close(listenFd_);
         listenFd_ = -1;
     }
-
-    std::lock_guard<std::mutex> lk(conns_mtx_);
-    for (auto& kv : conns_) {
+    //conns_ 是多线程共享容器，必须加锁，否则会在 stop() 清理时被其他线程同时修改导致崩溃。
+    std::lock_guard<std::mutex> lock(conns_mtx_);
+    for(auto& kv : conns_){
         int fd = kv.first;
         reactor_.delFd(fd);
         ::close(fd);
@@ -107,106 +107,126 @@ void Server::stop() {
     conns_.clear();
 }
 
-void Server::onEvent(int fd, uint32_t events, void* user) {
+void Server::onEvent(int fd, uint32_t events, void* user){
     // 错误/挂起优先处理
-    if (events & (EPOLLERR | EPOLLHUP)) {
+    if(events & (EPOLLERR | EPOLLHUP)){
         closeConn(fd);
         return;
     }
 
-    if (fd == listenFd_) {
-        if (events & EPOLLIN) onAccept();
+    if(fd == listenFd_){
+        /*如果事件events 位与(全1为1)上,
+        用位与来判断events里面是否有这个事件，
+        如果没有这个事件，
+        我的events & “事件”就是为0不会执行这个语句了*/
+        if(events & EPOLLIN) onAccept();
         return;
     }
 
     // 普通连接
+    /*ptr是指向这个独立智能指针对象的指针，
+    这个unique_ptr是一个类对象，
+    比如: auto uPtr = make_unique<Connection> (10);
+    uPtr->fd = 10;//这个只是实现得像指针但是uPtr实际上还是只是个对象，
+    只是封装这个unique_ptr的人想把他变得跟指针一样的用法才这样写的
+    */
     std::unique_ptr<Connection>* p_holder = nullptr;
     {
-        std::lock_guard<std::mutex> lk(conns_mtx_);
+        std::lock_guard<std::mutex> lock(conns_mtx_);
         auto it = conns_.find(fd);
-        if (it == conns_.end()) return; // 可能已被关闭
+        if(it == conns_.end()) return;
         p_holder = &it->second;
     }
-    Connection& c = *p_holder->get();
 
-    if (events & EPOLLIN)  onConnRead(c);
-    if (events & EPOLLOUT) onConnWrite(c);
+    Connection& conn = *p_holder->get();
+
+    if(events & EPOLLIN) onConnRead(conn);
+    if(events & EPOLLOUT) onConnWrite(conn);
 }
 
 void Server::onAccept() {
-    for (;;) {
-        sockaddr_in cli{};
-        socklen_t len = sizeof(cli);
-        int cfd = ::accept(listenFd_, reinterpret_cast<sockaddr*>(&cli), &len);
-        if (cfd < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) break; // 全部接完
-            perror("accept");
+    for(;;){
+        sockaddr_in client_addr{};
+        socklen_t len = sizeof(client_addr);
+        int clientfd = accept(listenFd_, reinterpret_cast<sockaddr*> (&client_addr), &len);
+        if(clientfd < 0){
+            //客户端全部被我的加完了，已经没有客户端去加了
+            if(errno == EAGAIN || errno == EWOULDBLOCK) break;// 全部接完
+            perror("accpet");
             break;
         }
 
-        if (!setNonBlock(cfd)) {
-            ::close(cfd);
+        if(!setNonBlock(clientfd)){
+            ::close(clientfd);
             continue;
         }
-        setTcpNoDelay(cfd);
+
+        setTcpNoDelay(clientfd);
 
         auto conn = std::make_unique<Connection>();
-        conn->fd = cfd;
+        conn->fd = clientfd;
         Connection* user_ptr = conn.get();
 
         {
-            std::lock_guard<std::mutex> lk(conns_mtx_);
-            conns_.emplace(cfd, std::move(conn));
+            std::lock_guard<std::mutex> lock(conns_mtx_);
+            conns_.emplace(clientfd, std::move(conn));
         }
 
-        // 注册读事件（写事件按需开启）
-        if (!reactor_.addFd(cfd, EPOLLIN, user_ptr)) {
-            std::lock_guard<std::mutex> lk(conns_mtx_);
-            conns_.erase(cfd);
-            ::close(cfd);
+        if(!reactor_.addFd(clientfd, EPOLLIN, user_ptr)) {
+            std::lock_guard<std::mutex> lock(conns_mtx_);
+            conns_.erase(clientfd);
+            ::close(clientfd);
             continue;
         }
     }
 }
 
-void Server::onConnRead(Connection& c) {
-    char buf[4096];
-    for (;;) {
-        ssize_t n = ::read(c.fd, buf, sizeof(buf));
-        if (n > 0) {
-            c.inbuf.append(buf, n);
+
+
+void Server::onConnRead(Connection& conn){
+    char buff[1024];
+    while(true){
+        ssize_t n = ::read(conn.fd, buff, sizeof(buff));
+        if(n > 0){
+            conn.inbuf.append(buff, n);
             continue;
         }
-        if (n == 0) { // 对端关闭
-            closeConn(c.fd);
+        if(n == 0){
+            // 对端关闭
+            closeConn(conn.fd);
             return;
         }
-        if (errno == EAGAIN || errno == EWOULDBLOCK) break; // 读尽
+        if(errno == EAGAIN || errno == EWOULDBLOCK) break; // 读尽
+
         perror("read");
-        closeConn(c.fd);
-        return;
+        closeConn(conn.fd);
+        return; // 读出错直接结束，不再解析 inbuf
     }
 
     // 行协议：按 '\n' 拆包，剥掉末尾 '\r'
     size_t pos = 0;
-    for (;;) {
-        auto nl = c.inbuf.find('\n', pos);
-        if (nl == std::string::npos) {
-            // 把未处理的前缀保留
-            c.inbuf.erase(0, pos);
+    for(;;){
+        auto nlocation = conn.inbuf.find('\n', pos);
+        //npos->not position,没找到子串/字符
+        if (nlocation == std::string::npos) {
+            // 不完整，保留尚未处理的
+            conn.inbuf.erase(0, pos);
             break;
         }
-        std::string line = c.inbuf.substr(pos, nl - pos);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        pos = nl + 1;
 
-        // 现在先都同步处理，线程池接好后再改成异步投递
-        auto out = processLine(line);
-        postWrite(c.fd, std::move(out));
+        std::string line = conn.inbuf.substr(pos, nlocation - pos);
+        if(!line.empty() && line.back() == '\r') line.pop_back();
+        pos = nlocation + 1;
+
+         // 现在先都同步处理，线程池接好后再改成异步投递
+         auto out = processLine(line);
+         postWrite(conn.fd, std::move(out));
     }
+
 }
 
-void Server::onConnWrite(Connection& c) {
+
+void Server::onConnWrite(Connection& c){
     for (;;) {
         if (c.outbuf.empty()) break;
         ssize_t n = ::write(c.fd, c.outbuf.data(), c.outbuf.size());
@@ -227,36 +247,37 @@ void Server::onConnWrite(Connection& c) {
     }
 }
 
-void Server::closeConn(int fd) {
+
+void Server::closeConn(int fd){
     {
-        std::lock_guard<std::mutex> lk(conns_mtx_);
+        std::lock_guard<std::mutex> lock(conns_mtx_);
         auto it = conns_.find(fd);
-        if (it == conns_.end()) return;
+        if(it == conns_.end()) return;
     }
     reactor_.delFd(fd);
     ::close(fd);
     {
-        std::lock_guard<std::mutex> lk(conns_mtx_);
+        std::lock_guard<std::mutex> lock(conns_mtx_);
         conns_.erase(fd);
     }
 }
 
-std::string Server::processLine(const std::string& line) {
-    // 你可以在这里做业务处理；演示：简单 echo
-    if (line == "quit" || line == "exit") {
+std::string Server::processLine(const std::string& line){
+    if(line == "quit" || line == "exit"){
         return std::string("bye\n");
     }
+    std::cout << "[客户端消息] " << line << std::endl;
     return std::string("echo: ") + line + "\n";
 }
 
-void Server::postWrite(int fd, std::string data) {
+void Server::postWrite(int fd, std::string data){
     std::unique_lock<std::mutex> lk(conns_mtx_);
     auto it = conns_.find(fd);
     if (it == conns_.end()) return; // 连接已关
     Connection& c = *it->second;
 
     c.outbuf.append(data);
-    if (!c.wantWrite) {
+    if(!c.wantWrite){
         c.wantWrite = true;
         // 正确顺序：先改 epoll 事件，再唤醒 reactor
         reactor_.modFd(fd, EPOLLIN | EPOLLOUT, &c);
@@ -274,7 +295,7 @@ bool Server::setNonBlock(int fd) {
     return true;
 }
 
-bool Server::setTcpNoDelay(int fd) {
+bool Server::setTcpNoDelay(int fd){
     int one = 1;
-    return ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) == 0;
+    return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) == 0;
 }

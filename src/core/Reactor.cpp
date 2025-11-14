@@ -222,3 +222,8 @@ void reactor::stop(){
 int reactor::wakeUpFd()const{
     return  evfd_;
 }
+
+bool reactor::setDispatcher(std::function<void(int, uint32_t, void*)> cb)
+{
+    dispatcher_ = std::move(cb);
+}

@@ -129,6 +129,54 @@ NebulaChat/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/build
 .PHONY : NebulaChat/fast
 
+src/core/Reactor.o: src/core/Reactor.cpp.o
+.PHONY : src/core/Reactor.o
+
+# target to build an object file
+src/core/Reactor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o
+.PHONY : src/core/Reactor.cpp.o
+
+src/core/Reactor.i: src/core/Reactor.cpp.i
+.PHONY : src/core/Reactor.i
+
+# target to preprocess a source file
+src/core/Reactor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.i
+.PHONY : src/core/Reactor.cpp.i
+
+src/core/Reactor.s: src/core/Reactor.cpp.s
+.PHONY : src/core/Reactor.s
+
+# target to generate assembly for a file
+src/core/Reactor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.s
+.PHONY : src/core/Reactor.cpp.s
+
+src/core/Server.o: src/core/Server.cpp.o
+.PHONY : src/core/Server.o
+
+# target to build an object file
+src/core/Server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o
+.PHONY : src/core/Server.cpp.o
+
+src/core/Server.i: src/core/Server.cpp.i
+.PHONY : src/core/Server.i
+
+# target to preprocess a source file
+src/core/Server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Server.cpp.i
+.PHONY : src/core/Server.cpp.i
+
+src/core/Server.s: src/core/Server.cpp.s
+.PHONY : src/core/Server.s
+
+# target to generate assembly for a file
+src/core/Server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/Server.cpp.s
+.PHONY : src/core/Server.cpp.s
+
 src/core/ThreadPool.o: src/core/ThreadPool.cpp.o
 .PHONY : src/core/ThreadPool.o
 
@@ -186,6 +234,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... NebulaChat"
+	@echo "... src/core/Reactor.o"
+	@echo "... src/core/Reactor.i"
+	@echo "... src/core/Reactor.s"
+	@echo "... src/core/Server.o"
+	@echo "... src/core/Server.i"
+	@echo "... src/core/Server.s"
 	@echo "... src/core/ThreadPool.o"
 	@echo "... src/core/ThreadPool.i"
 	@echo "... src/core/ThreadPool.s"
