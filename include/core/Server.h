@@ -8,7 +8,8 @@ struct Connection
     int fd{-1};
     std::string inbuf;
     std::string outbuf;
-    bool wantWrite{false};
+    std::atomic<bool> wantWrite{false};
+    std::atomic<bool> shortClose{false};
 };
 
 class Server

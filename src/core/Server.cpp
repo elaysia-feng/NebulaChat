@@ -8,6 +8,10 @@
 #include <errno.h>
 #include <cstring>
 #include <iostream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
 
 Server::Server(reactor& rect, uint16_t port, bool useET, ThreadPool* pool)
     : reactor_(rect), Threadpool_(pool), port_(port), useET_(useET) {}
@@ -219,8 +223,27 @@ void Server::onConnRead(Connection& conn){
         pos = nlocation + 1;
 
          // 现在先都同步处理，线程池接好后再改成异步投递
-         auto out = processLine(line);
-         postWrite(conn.fd, std::move(out));
+        auto out = processLine(line);  
+        json r = json::parse(out);
+        /*① 查找 key 是否存在
+
+        （如果不存在 → 直接返回 default）
+
+        ② 如果存在：取出这个 key 对应的 json 对象
+
+        （这个 json 对象的类型可能是：bool, string, int, double, object…）
+
+        ③ 自动把 JSON 值转换为你想要的类型
+
+        （这里你告诉它你要 bool 类型）*/
+
+        bool isClose = r.value("close", false);
+        postWrite(conn.fd, std::move(out));
+
+        if(isClose){
+            conn.shortClose.store(true);
+        }
+
     }
 
 }
@@ -239,9 +262,12 @@ void Server::onConnWrite(Connection& c){
         closeConn(c.fd);
         return;
     }
+    if(c.outbuf.empty() && c.shortClose){
+        closeConn(c.fd);
+    }
 
     if (c.outbuf.empty() && c.wantWrite) {
-        c.wantWrite = false;
+        c.wantWrite.store(false);
         // 只保留读事件（user 传 nullptr 表示不改）
         reactor_.modFd(c.fd, EPOLLIN, nullptr);
     }
@@ -263,11 +289,45 @@ void Server::closeConn(int fd){
 }
 
 std::string Server::processLine(const std::string& line){
-    if(line == "quit" || line == "exit"){
-        return std::string("bye\n");
+    //3. 执行业务
+    json resp;
+    try{
+        // 1. JSON 解析
+        json rep = json::parse(line);
+
+        // 2. 取 cmd
+        std::string cmd = rep.value("cmd", "");
+
+        if(cmd == "echo"){
+            std::string msg = rep.value("msg", "");
+            resp["ok"] = true;
+            resp["data"] = msg;
+        }
+        else if(cmd == "upper"){
+            std::string msg = rep.value("msg", "");
+            for(auto& c : msg) c = toupper(c);
+            resp["ok"] = true;
+            resp["data"] = msg;
+        }
+        else if (cmd == "quit") {
+            resp["ok"] = true;
+            resp["data"] = "bye";
+            resp["close"] = true;
+        }
+        else {
+            resp["ok"] = false;
+            resp["err"] = "unknown cmd";
+        }
+
     }
-    std::cout << "[客户端消息] " << line << std::endl;
-    return std::string("echo: ") + line + "\n";
+    catch(const std::exception& e){
+        resp["ok"] = false;
+        resp["err"] = e.what();
+        return resp.dump() + '\n';
+    }
+
+    return resp.dump() + '\n';
+
 }
 
 void Server::postWrite(int fd, std::string data){
@@ -278,7 +338,7 @@ void Server::postWrite(int fd, std::string data){
 
     c.outbuf.append(data);
     if(!c.wantWrite){
-        c.wantWrite = true;
+        c.wantWrite.store(true);
         // 正确顺序：先改 epoll 事件，再唤醒 reactor
         reactor_.modFd(fd, EPOLLIN | EPOLLOUT, &c);
         reactor_.wakeup();
