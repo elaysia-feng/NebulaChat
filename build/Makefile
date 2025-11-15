@@ -129,6 +129,30 @@ NebulaChat/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/build
 .PHONY : NebulaChat/fast
 
+src/chat/AuthService.o: src/chat/AuthService.cpp.o
+.PHONY : src/chat/AuthService.o
+
+# target to build an object file
+src/chat/AuthService.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o
+.PHONY : src/chat/AuthService.cpp.o
+
+src/chat/AuthService.i: src/chat/AuthService.cpp.i
+.PHONY : src/chat/AuthService.i
+
+# target to preprocess a source file
+src/chat/AuthService.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.i
+.PHONY : src/chat/AuthService.cpp.i
+
+src/chat/AuthService.s: src/chat/AuthService.cpp.s
+.PHONY : src/chat/AuthService.s
+
+# target to generate assembly for a file
+src/chat/AuthService.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.s
+.PHONY : src/chat/AuthService.cpp.s
+
 src/chat/MessageHandler.o: src/chat/MessageHandler.cpp.o
 .PHONY : src/chat/MessageHandler.o
 
@@ -225,6 +249,54 @@ src/core/ThreadPool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.s
 .PHONY : src/core/ThreadPool.cpp.s
 
+src/db/DBconnection.o: src/db/DBconnection.cpp.o
+.PHONY : src/db/DBconnection.o
+
+# target to build an object file
+src/db/DBconnection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o
+.PHONY : src/db/DBconnection.cpp.o
+
+src/db/DBconnection.i: src/db/DBconnection.cpp.i
+.PHONY : src/db/DBconnection.i
+
+# target to preprocess a source file
+src/db/DBconnection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.i
+.PHONY : src/db/DBconnection.cpp.i
+
+src/db/DBconnection.s: src/db/DBconnection.cpp.s
+.PHONY : src/db/DBconnection.s
+
+# target to generate assembly for a file
+src/db/DBconnection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.s
+.PHONY : src/db/DBconnection.cpp.s
+
+src/db/DBpool.o: src/db/DBpool.cpp.o
+.PHONY : src/db/DBpool.o
+
+# target to build an object file
+src/db/DBpool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o
+.PHONY : src/db/DBpool.cpp.o
+
+src/db/DBpool.i: src/db/DBpool.cpp.i
+.PHONY : src/db/DBpool.i
+
+# target to preprocess a source file
+src/db/DBpool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.i
+.PHONY : src/db/DBpool.cpp.i
+
+src/db/DBpool.s: src/db/DBpool.cpp.s
+.PHONY : src/db/DBpool.s
+
+# target to generate assembly for a file
+src/db/DBpool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.s
+.PHONY : src/db/DBpool.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -258,6 +330,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... NebulaChat"
+	@echo "... src/chat/AuthService.o"
+	@echo "... src/chat/AuthService.i"
+	@echo "... src/chat/AuthService.s"
 	@echo "... src/chat/MessageHandler.o"
 	@echo "... src/chat/MessageHandler.i"
 	@echo "... src/chat/MessageHandler.s"
@@ -270,6 +345,12 @@ help:
 	@echo "... src/core/ThreadPool.o"
 	@echo "... src/core/ThreadPool.i"
 	@echo "... src/core/ThreadPool.s"
+	@echo "... src/db/DBconnection.o"
+	@echo "... src/db/DBconnection.i"
+	@echo "... src/db/DBconnection.s"
+	@echo "... src/db/DBpool.o"
+	@echo "... src/db/DBpool.i"
+	@echo "... src/db/DBpool.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

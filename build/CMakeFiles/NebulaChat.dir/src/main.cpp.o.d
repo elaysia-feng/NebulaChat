@@ -290,8 +290,20 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: \
  /usr/include/nlohmann/ordered_map.hpp \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
- /usr/include/c++/11/iostream /usr/include/c++/11/csignal \
- /usr/include/signal.h \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h \
+ /home/elias/vscode_code_all/NebulaChat/include/db/DBpool.h \
+ /home/elias/vscode_code_all/NebulaChat/include/db/DBconnection.h \
+ /usr/include/mysql/mysql.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h \
+ /usr/include/mysql/field_types.h /usr/include/mysql/my_list.h \
+ /usr/include/mysql/mysql_com.h /usr/include/mysql/my_command.h \
+ /usr/include/mysql/my_compress.h \
+ /usr/include/mysql/udf_registration_types.h \
+ /usr/include/mysql/client_plugin.h /usr/include/c++/11/stdlib.h \
+ /usr/include/mysql/plugin_auth_common.h \
+ /usr/include/mysql/mysql_version.h /usr/include/mysql/mysql_time.h \
+ /usr/include/mysql/errmsg.h /usr/include/c++/11/iostream \
+ /usr/include/c++/11/csignal /usr/include/signal.h \
  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
  /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
  /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \

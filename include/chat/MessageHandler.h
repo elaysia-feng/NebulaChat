@@ -1,15 +1,15 @@
-#pragma once 
-#include <nlohmann/json.hpp>
+#pragma once
 #include <string>
+#include <nlohmann/json.hpp>
+#include "chat/AuthService.h"
 
-struct Connection;
+struct Connection;  // 只需要前向声明
 
 class MessageHandler
 {
-private:
-    nlohmann::json resp_;
-
 public:
-    std::string handleMessage(Connection& conn, const std::string& line);
-};
+    std::string handleMessage(Connection& c, const std::string& line);
 
+private:
+    AuthService auth_;
+};

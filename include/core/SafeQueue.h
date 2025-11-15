@@ -10,6 +10,8 @@ public:
         : max_event_(max_event) {}
 
     // 阻塞出队；队列空且已 stop 则返回 false
+    /*注意传递的参数,这个value传过来是引用哦，
+    在我的pop的里面会先取值再pop哦*/
     bool Safepop(T& value) {
         std::unique_lock<std::mutex> lock(mtx_);
         cv_.wait(lock, [&]() {

@@ -1,3 +1,5 @@
+#create 
+
 cd ~/vscode_code_all
 mkdir NebulaChat && cd NebulaChat
 

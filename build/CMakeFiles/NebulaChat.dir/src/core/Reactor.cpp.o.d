@@ -191,4 +191,5 @@ CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o: \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
  /usr/include/x86_64-linux-gnu/sys/eventfd.h \
- /usr/include/x86_64-linux-gnu/bits/eventfd.h
+ /usr/include/x86_64-linux-gnu/bits/eventfd.h /usr/include/c++/11/cstring \
+ /usr/include/string.h /usr/include/strings.h

@@ -1,6 +1,6 @@
 #include "core/Server.h"
 #include "core/ThreadPool.h"
-
+#include "db/DBpool.h"
 #include <iostream>
 #include <csignal>
 
@@ -14,30 +14,46 @@ void handleSigint(int) {
 }
 
 int main() {
-    // ① 创建 Reactor（事件循环）
-    reactor reactor(1024, true);
-    g_reactor = &reactor;
+    //  初始化 MySQL 连接池
+    bool ok = DBPool::Instance().init(
+        "127.0.0.1",    // MySQL host
+        3306,           // port
+        "root",         // user
+        "1234",         // password
+        "serverlogin",  // database（确保已创建）
+        10              // pool size
+    );
 
-    // ② 创建线程池（Server 的任务异步执行）
+    if (!ok) {
+        std::cerr << "[main] DBPool init FAILED!" << std::endl;
+        return -1;
+    }
+    std::cout << "[main] DBPool init OK\n";
+
+    // ① 创建 Reactor（事件循环）
+    reactor rect(1024, true);
+    g_reactor = &rect;
+
+    // ② 创建线程池
     ThreadPool pool(4, 1024);
     pool.run();
 
-    // ③ 创建 Server（内部会 setDispatcher）
-    Server server(reactor, 8888, true, &pool);
+    // ③ 创建 Server
+    Server server(rect, 8888, true, &pool);
     g_server = &server;
 
-    // ④ 启动 Server（会创建 listenfd 并 addFd 到 Reactor）
+    // ④ 启动 Server
     if (!server.start()) {
         std::cerr << "Server start failed\n";
-        return 1;
+        return -1;
     }
 
     // ⑤ 注册 Ctrl+C
     std::signal(SIGINT, handleSigint);
 
-    // ⑥ 开始事件循环（阻塞）
+    // ⑥ 开始事件循环
     std::cout << "Server is running on port 8888\n";
-    reactor.loop();
+    rect.loop();
 
     return 0;
 }

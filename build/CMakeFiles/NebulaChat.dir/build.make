@@ -139,13 +139,58 @@ CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elias/vscode_code_all/NebulaChat/src/chat/MessageHandler.cpp -o CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.s
 
+CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: CMakeFiles/NebulaChat.dir/flags.make
+CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: ../src/chat/AuthService.cpp
+CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: CMakeFiles/NebulaChat.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o -MF CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o.d -o CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o -c /home/elias/vscode_code_all/NebulaChat/src/chat/AuthService.cpp
+
+CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elias/vscode_code_all/NebulaChat/src/chat/AuthService.cpp > CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.i
+
+CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elias/vscode_code_all/NebulaChat/src/chat/AuthService.cpp -o CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.s
+
+CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: CMakeFiles/NebulaChat.dir/flags.make
+CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: ../src/db/DBconnection.cpp
+CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: CMakeFiles/NebulaChat.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o -MF CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o.d -o CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o -c /home/elias/vscode_code_all/NebulaChat/src/db/DBconnection.cpp
+
+CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elias/vscode_code_all/NebulaChat/src/db/DBconnection.cpp > CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.i
+
+CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elias/vscode_code_all/NebulaChat/src/db/DBconnection.cpp -o CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.s
+
+CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: CMakeFiles/NebulaChat.dir/flags.make
+CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: ../src/db/DBpool.cpp
+CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: CMakeFiles/NebulaChat.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o -MF CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o.d -o CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o -c /home/elias/vscode_code_all/NebulaChat/src/db/DBpool.cpp
+
+CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/elias/vscode_code_all/NebulaChat/src/db/DBpool.cpp > CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.i
+
+CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/elias/vscode_code_all/NebulaChat/src/db/DBpool.cpp -o CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.s
+
 # Object files for target NebulaChat
 NebulaChat_OBJECTS = \
 "CMakeFiles/NebulaChat.dir/src/main.cpp.o" \
 "CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o" \
 "CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o" \
 "CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o" \
-"CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o"
+"CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o" \
+"CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o" \
+"CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o" \
+"CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o"
 
 # External object files for target NebulaChat
 NebulaChat_EXTERNAL_OBJECTS =
@@ -155,9 +200,13 @@ NebulaChat: CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o
 NebulaChat: CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o
 NebulaChat: CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o
 NebulaChat: CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o
+NebulaChat: CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o
+NebulaChat: CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o
+NebulaChat: CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o
 NebulaChat: CMakeFiles/NebulaChat.dir/build.make
+NebulaChat: /usr/lib/x86_64-linux-gnu/libmysqlclient.so
 NebulaChat: CMakeFiles/NebulaChat.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable NebulaChat"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable NebulaChat"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/NebulaChat.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

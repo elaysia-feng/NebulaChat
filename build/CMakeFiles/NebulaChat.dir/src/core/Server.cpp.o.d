@@ -290,6 +290,7 @@ CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o: \
  /usr/include/nlohmann/ordered_map.hpp \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
