@@ -81,12 +81,12 @@ clean: CMakeFiles/NebulaChat.dir/clean
 CMakeFiles/NebulaChat.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target NebulaChat"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/elias/vscode_code_all/NebulaChat/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target NebulaChat"
 .PHONY : CMakeFiles/NebulaChat.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/NebulaChat.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/elias/vscode_code_all/NebulaChat/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/elias/vscode_code_all/NebulaChat/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/NebulaChat.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/elias/vscode_code_all/NebulaChat/build/CMakeFiles 0
 .PHONY : CMakeFiles/NebulaChat.dir/rule

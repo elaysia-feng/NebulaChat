@@ -129,6 +129,30 @@ NebulaChat/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/build
 .PHONY : NebulaChat/fast
 
+src/chat/MessageHandler.o: src/chat/MessageHandler.cpp.o
+.PHONY : src/chat/MessageHandler.o
+
+# target to build an object file
+src/chat/MessageHandler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o
+.PHONY : src/chat/MessageHandler.cpp.o
+
+src/chat/MessageHandler.i: src/chat/MessageHandler.cpp.i
+.PHONY : src/chat/MessageHandler.i
+
+# target to preprocess a source file
+src/chat/MessageHandler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.i
+.PHONY : src/chat/MessageHandler.cpp.i
+
+src/chat/MessageHandler.s: src/chat/MessageHandler.cpp.s
+.PHONY : src/chat/MessageHandler.s
+
+# target to generate assembly for a file
+src/chat/MessageHandler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.s
+.PHONY : src/chat/MessageHandler.cpp.s
+
 src/core/Reactor.o: src/core/Reactor.cpp.o
 .PHONY : src/core/Reactor.o
 
@@ -234,6 +258,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... NebulaChat"
+	@echo "... src/chat/MessageHandler.o"
+	@echo "... src/chat/MessageHandler.i"
+	@echo "... src/chat/MessageHandler.s"
 	@echo "... src/core/Reactor.o"
 	@echo "... src/core/Reactor.i"
 	@echo "... src/core/Reactor.s"

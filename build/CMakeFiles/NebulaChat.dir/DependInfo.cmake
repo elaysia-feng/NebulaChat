@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/elias/vscode_code_all/NebulaChat/src/chat/MessageHandler.cpp" "CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o" "gcc" "CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o.d"
   "/home/elias/vscode_code_all/NebulaChat/src/core/Reactor.cpp" "CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o" "gcc" "CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o.d"
   "/home/elias/vscode_code_all/NebulaChat/src/core/Server.cpp" "CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o" "gcc" "CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o.d"
   "/home/elias/vscode_code_all/NebulaChat/src/core/ThreadPool.cpp" "CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o" "gcc" "CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o.d"

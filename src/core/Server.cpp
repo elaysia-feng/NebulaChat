@@ -110,7 +110,7 @@ void Server::stop(){
     }
     conns_.clear();
 }
-
+/*处理监听事件，有端口想要访问就加入reactor管理,反之就是有加入的客户端想要完成写或者读*/
 void Server::onEvent(int fd, uint32_t events, void* user){
     // 错误/挂起优先处理
     if(events & (EPOLLERR | EPOLLHUP)){
@@ -147,7 +147,7 @@ void Server::onEvent(int fd, uint32_t events, void* user){
     if(events & EPOLLIN) onConnRead(conn);
     if(events & EPOLLOUT) onConnWrite(conn);
 }
-
+/*处理新的连接事件，加入我的reactor管理*/
 void Server::onAccept() {
     for(;;){
         sockaddr_in client_addr{};
@@ -169,6 +169,11 @@ void Server::onAccept() {
 
         auto conn = std::make_unique<Connection>();
         conn->fd = clientfd;
+        // 现在先默认都登录
+        conn->authed = true;
+        conn->userId = 0;           // 暂时不用
+        conn->name.clear();         // 暂时为空
+        conn->roomId = 0;           // 暂时不分房间
         Connection* user_ptr = conn.get();
 
         {
@@ -186,7 +191,7 @@ void Server::onAccept() {
 }
 
 
-
+/*读客户端发送的东西，解析并回复*/
 void Server::onConnRead(Connection& conn){
     char buff[1024];
     while(true){
@@ -222,33 +227,40 @@ void Server::onConnRead(Connection& conn){
         if(!line.empty() && line.back() == '\r') line.pop_back();
         pos = nlocation + 1;
 
-         // 现在先都同步处理，线程池接好后再改成异步投递
-        auto out = processLine(line);  
-        json r = json::parse(out);
-        /*① 查找 key 是否存在
-
-        （如果不存在 → 直接返回 default）
-
-        ② 如果存在：取出这个 key 对应的 json 对象
-
-        （这个 json 对象的类型可能是：bool, string, int, double, object…）
-
-        ③ 自动把 JSON 值转换为你想要的类型
-
-        （这里你告诉它你要 bool 类型）*/
-
-        bool isClose = r.value("close", false);
-        postWrite(conn.fd, std::move(out));
-
-        if(isClose){
-            conn.shortClose.store(true);
+    /*现在这个版本加入了线程池*/
+    Threadpool_->Enqueue([this, fd = conn.fd, line](){
+        Connection* c = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(conns_mtx_);
+            auto it = conns_.find(fd);
+            if(it == conns_.end()) return; //表示连接关闭
+            c = it->second.get();
         }
+
+        // 业务处理（耗时部分）
+        std::cout << "[" << fd << "]" << "-> " << line << std::endl;
+        std::string out = msgHandler_.handleMessage(*c, line);
+        json resp = json::parse(out);
+        
+        bool isClose = resp.value("close", false);
+        
+        // 写回事件一定要在 Server 线程安全里做
+        postWrite(fd, std::move(out));
+        if(isClose){
+            std::lock_guard<std::mutex> lock(conns_mtx_);
+            auto it = conns_.find(fd);
+            if(it != conns_.end()){
+                it->second->shortClose.store(true);
+            }
+        }
+
+    });
 
     }
 
 }
 
-
+/*把想回复给客户端的信息写进缓存区*/
 void Server::onConnWrite(Connection& c){
     for (;;) {
         if (c.outbuf.empty()) break;
@@ -273,7 +285,7 @@ void Server::onConnWrite(Connection& c){
     }
 }
 
-
+/*关闭客户端的连接*/
 void Server::closeConn(int fd){
     {
         std::lock_guard<std::mutex> lock(conns_mtx_);
@@ -288,48 +300,7 @@ void Server::closeConn(int fd){
     }
 }
 
-std::string Server::processLine(const std::string& line){
-    //3. 执行业务
-    json resp;
-    try{
-        // 1. JSON 解析
-        json rep = json::parse(line);
-
-        // 2. 取 cmd
-        std::string cmd = rep.value("cmd", "");
-
-        if(cmd == "echo"){
-            std::string msg = rep.value("msg", "");
-            resp["ok"] = true;
-            resp["data"] = msg;
-        }
-        else if(cmd == "upper"){
-            std::string msg = rep.value("msg", "");
-            for(auto& c : msg) c = toupper(c);
-            resp["ok"] = true;
-            resp["data"] = msg;
-        }
-        else if (cmd == "quit") {
-            resp["ok"] = true;
-            resp["data"] = "bye";
-            resp["close"] = true;
-        }
-        else {
-            resp["ok"] = false;
-            resp["err"] = "unknown cmd";
-        }
-
-    }
-    catch(const std::exception& e){
-        resp["ok"] = false;
-        resp["err"] = e.what();
-        return resp.dump() + '\n';
-    }
-
-    return resp.dump() + '\n';
-
-}
-
+/*把服务端想写的通过多线程先放在Connect里的outbuf*/
 void Server::postWrite(int fd, std::string data){
     std::unique_lock<std::mutex> lk(conns_mtx_);
     auto it = conns_.find(fd);
@@ -355,6 +326,7 @@ bool Server::setNonBlock(int fd) {
     return true;
 }
 
+/*设置端口多路复用*/
 bool Server::setTcpNoDelay(int fd){
     int one = 1;
     return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) == 0;

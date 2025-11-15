@@ -13,4 +13,5 @@ add_executable(NebulaChat
     src/core/ThreadPool.cpp
     src/core/Reactor.cpp
     src/core/Server.cpp
+    src/chat/MessageHandler.cpp
 )
