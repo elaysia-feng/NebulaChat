@@ -1,5 +1,5 @@
 #include "db/DBpool.h"
-#include <iostream>
+#include "core/Logger.h"
 
 DBPool& DBPool::Instance(){
     static DBPool instance;
@@ -16,11 +16,11 @@ bool DBPool::init(const std::string& host,
     bool ok = false;
 
     std::call_once(initFlag_, [&](){
-        std::cout << "[DBPool::init] start init: host=" << host
-                  << " port=" << port
-                  << " user=" << user
-                  << " db=" << dbname
-                  << " poolSize=" << poolSize << std::endl;
+        LOG_INFO("[DBPool::init] start init: host=" << host
+                 << " port=" << port
+                 << " user=" << user
+                 << " db=" << dbname
+                 << " poolSize=" << poolSize);
 
         host_     = host;
         port_     = port;
@@ -34,29 +34,29 @@ bool DBPool::init(const std::string& host,
         for (int i = 0; i < poolSize_; ++i) {
             auto conn = std::make_shared<DBconnection> ();
             if (!conn->connect(host_, port_, user_, password_, dbname_)) {
-                std::cerr << "[DBPool::init] connect failed, index=" << i << std::endl;
+                LOG_ERROR("[DBPool::init] connect failed, index=" << i);
                 continue;
             }
             pool_.Safepush(conn);
             ++success;
-            std::cout << "[DBPool::init] created connection index=" << i
-                      << " raw=" << conn.get() << std::endl;
+            LOG_DEBUG("[DBPool::init] created connection index=" << i
+                      << " raw=" << conn.get());
         }
 
         if (success == 0) {
-            std::cerr << "[DBPool::init] no connection created, init FAILED" << std::endl;
+            LOG_ERROR("[DBPool::init] no connection created, init FAILED");
             inited_ = false;
             ok      = false;
         } else {
-            std::cout << "[DBPool::init] init OK, success=" << success
-                      << " / poolSize=" << poolSize_ << std::endl;
+            LOG_INFO("[DBPool::init] init OK, success=" << success
+                     << " / poolSize=" << poolSize_);
             inited_ = true;
             ok      = true;
         }
     });
 
     if (!inited_) {
-        std::cerr << "[DBPool::init] initFlag already set, but inited_ = false" << std::endl;
+        LOG_ERROR("[DBPool::init] initFlag already set, but inited_ = false");
     }
 
     // 用逻辑与，表达“初始化标记 + 本次 init 的结果”
@@ -66,19 +66,19 @@ bool DBPool::init(const std::string& host,
 
 DBConnectionPtr DBPool::getConnection(){
     if (!inited_) {
-        std::cerr << "[DBPool::getConnection] DBPool not inited\n";
+        LOG_ERROR("[DBPool::getConnection] DBPool not inited");
         return nullptr;
     }
 
     DBConnectionPtr conn;
 
     if (!pool_.Safepop(conn)) {
-        std::cerr << "[DBPool::getConnection] Safepop failed (pool empty or stopped)\n";
+        LOG_WARN("[DBPool::getConnection] Safepop failed (pool empty or stopped)");
         return nullptr;
     }
 
-    std::cout << "[DBPool::getConnection] got connection from pool, raw="
-              << conn.get() << std::endl;
+    LOG_DEBUG("[DBPool::getConnection] got connection from pool, raw="
+              << conn.get());
 
     auto self = this;
     //不是马上执行 deleter，而是注册了一个“未来要执行的动作”。
@@ -90,8 +90,8 @@ DBConnectionPtr DBPool::getConnection(){
     return DBConnectionPtr(conn.get(), [self, conn](DBconnection* p) {
         (void)p; // p 实际上不用，我们只是利用 shared_ptr<DBconnection> conn 来管理生命周期
 
-        std::cout << "[DBPool::getConnection] return connection to pool, raw="
-                  << conn.get() << std::endl;
+        LOG_DEBUG("[DBPool::getConnection] return connection to pool, raw="
+                  << conn.get());
 
         // 归还到队列
         self->pool_.Safepush(conn);

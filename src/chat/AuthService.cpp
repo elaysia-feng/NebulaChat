@@ -1,7 +1,7 @@
 #include "chat/AuthService.h"
 #include "db/DBpool.h"
+#include "core/Logger.h"
 #include <string>
-#include <iostream>
 
 bool AuthService::login(const std::string& user,
                         const std::string& pass,
@@ -10,7 +10,7 @@ bool AuthService::login(const std::string& user,
     // 从连接池获取连接
     auto conn = DBPool::Instance().getConnection();
     if (!conn) {
-        std::cerr << "[AuthService::login] ERROR: no db connection\n";
+        LOG_ERROR("[AuthService::login] ERROR: no db connection");
         return false;
     }
 
@@ -22,26 +22,26 @@ bool AuthService::login(const std::string& user,
         "AND password = '" + pass + "' "
         "LIMIT 1";
 
-    std::cout << "[AuthService::login] SQL = " << sql << std::endl;
+    LOG_DEBUG("[AuthService::login] SQL = " << sql);
 
     MYSQL_RES* res = conn->query(sql);
     if (!res) {
-        std::cerr << "[AuthService::login] query failed\n";
+        LOG_ERROR("[AuthService::login] query failed");
         return false;
     }
 
     // 一次一行
     MYSQL_ROW row = mysql_fetch_row(res);
     if (!row) {
-        std::cerr << "[AuthService::login] no such user or wrong password\n";
+        LOG_WARN("[AuthService::login] no such user or wrong password, user=" << user);
         mysql_free_result(res);
         return false;
     }
 
     // row[0] = id
     userId = std::stoi(row[0]);
-    std::cout << "[AuthService::login] user " << user
-              << " login success, id = " << userId << std::endl;
+    LOG_INFO("[AuthService::login] user " << user
+             << " login success, id = " << userId);
 
     mysql_free_result(res);
     return true;
@@ -54,7 +54,7 @@ bool AuthService::Register(const std::string& user,
 {
     auto conn = DBPool::Instance().getConnection();
     if (!conn) {
-        std::cerr << "[AuthService::Register] ERROR: no db connection\n";
+        LOG_ERROR("[AuthService::Register] ERROR: no db connection");
         return false;
     }
 
@@ -65,15 +65,15 @@ bool AuthService::Register(const std::string& user,
         "WHERE username = '" + user + "' "
         "LIMIT 1";
 
-    std::cout << "[AuthService::Register] check SQL = " << check_sql << std::endl;
+    LOG_DEBUG("[AuthService::Register] check SQL = " << check_sql);
 
     MYSQL_RES* check_res = conn->query(check_sql);
     if (check_res) {
         MYSQL_ROW row = mysql_fetch_row(check_res);
         if (row) {
             // 用户名已存在
-            std::cerr << "[AuthService::Register] username already exists: "
-                      << user << std::endl;
+            LOG_WARN("[AuthService::Register] username already exists: "
+                     << user);
             mysql_free_result(check_res);      // 必须释放
             return false;
         }
@@ -85,10 +85,10 @@ bool AuthService::Register(const std::string& user,
         "INSERT INTO users(username, password) "
         "VALUES('" + user + "', '" + pass + "')";
 
-    std::cout << "[AuthService::Register] insert SQL = " << insert_sql << std::endl;
+    LOG_DEBUG("[AuthService::Register] insert SQL = " << insert_sql);
 
     if (!conn->update(insert_sql)) {
-        std::cerr << "[AuthService::Register] insert error" << std::endl;
+        LOG_ERROR("[AuthService::Register] insert error");
         return false;
     }
 
@@ -98,25 +98,25 @@ bool AuthService::Register(const std::string& user,
         "WHERE username = '" + user + "' "
         "LIMIT 1";
 
-    std::cout << "[AuthService::Register] select SQL = " << select_sql << std::endl;
+    LOG_DEBUG("[AuthService::Register] select SQL = " << select_sql);
 
     MYSQL_RES* id_res = conn->query(select_sql);
     if (!id_res) {
-        std::cerr << "[AuthService::Register] select id failed\n";
+        LOG_ERROR("[AuthService::Register] select id failed");
         return false;
     }
 
     MYSQL_ROW row = mysql_fetch_row(id_res);
 
     if (!row) {
-        std::cerr << "[AuthService::Register] ERROR: cannot fetch id after insert\n";
+        LOG_ERROR("[AuthService::Register] ERROR: cannot fetch id after insert");
         mysql_free_result(id_res);
         return false;
     }
 
     userId = std::stoi(row[0]);
-    std::cout << "[AuthService::Register] register success, user = " << user
-              << ", id = " << userId << std::endl;
+    LOG_INFO("[AuthService::Register] register success, user = " << user
+             << ", id = " << userId);
 
     mysql_free_result(id_res);
     return true;

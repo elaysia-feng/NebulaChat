@@ -88,6 +88,7 @@ private:
     std::mutex conns_mtx_; // 保护 conns_ 以及 Connection.outbuf 等跨线程访问
     std::atomic<bool> running_{false};
     MessageHandler msgHandler_;   //  新增：业务处理器
+
 public:
     Server(reactor& rect, uint16_t port, bool useET = true, ThreadPool* pool = nullptr);
     ~Server();

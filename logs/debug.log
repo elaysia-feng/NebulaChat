@@ -1,0 +1,22 @@
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=0 raw=0x579463afe8c0
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=1 raw=0x579463c037a0
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=2 raw=0x579463c1b190
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=3 raw=0x579463c31e10
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=4 raw=0x579463c48870
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=5 raw=0x579463c5f2f0
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=6 raw=0x579463c75d70
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=7 raw=0x579463c8c7f0
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=8 raw=0x579463ca2a00
+2025-11-16 14:32:18 | DEBUG | [DBPool::init] created connection index=9 raw=0x579463cb8730
+2025-11-16 14:32:18 | DEBUG | [ThreadPool::run] worker 0 started, id=123437129397824
+2025-11-16 14:32:18 | DEBUG | [ThreadPool::run] worker 1 started, id=123437121005120
+2025-11-16 14:32:18 | DEBUG | [ThreadPool::run] worker 2 started, id=123437112612416
+2025-11-16 14:32:18 | DEBUG | [ThreadPool::run] worker 3 started, id=123437104219712
+2025-11-16 14:32:18 | DEBUG | [Reactor::addFd] fd=19 events=0x1 useET=true
+2025-11-16 14:32:50 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=18
+2025-11-16 14:32:50 | DEBUG | [Reactor::loop] epoll_wait interrupted by signal, retry
+2025-11-16 14:32:50 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 123437129397824
+2025-11-16 14:32:50 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 123437121005120
+2025-11-16 14:32:50 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 123437112612416
+2025-11-16 14:32:50 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 123437104219712
+2025-11-16 14:32:50 | DEBUG | [Reactor::stop] already stopped (running_ was false)

@@ -171,7 +171,7 @@ if __name__ == "__main__":
     if choice == "1":
         cli = NebulaClient()
         cli.connect()
-        print(cli.register("Elias", "1234"))
+        print(cli.register("seele", "seele"))
         print(cli.login("Elias", "1234"))
         print(cli.echo("hello^^"))
         print(cli.upper("abcdefg"))

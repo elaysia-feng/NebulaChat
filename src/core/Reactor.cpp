@@ -1,4 +1,5 @@
 #include "core/reactor.h"
+#include "core/Logger.h"   // 新增：日志头文件
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
@@ -50,8 +51,8 @@ namespace{
       // 读一次就够 – 多次 write 会累加到 counter 里
       ssize_t n = ::read(evfd, &counter, sizeof(counter));
       (void)n;
-      std::cout << "[Reactor::DrainEvent] drained eventfd=" << evfd
-                << " counter=" << counter << std::endl;
+      LOG_DEBUG("[Reactor::DrainEvent] drained eventfd=" << evfd
+                << " counter=" << counter);
   }
 }
 
@@ -63,23 +64,23 @@ reactor::reactor(int MaxEvent, bool useET)
       running_(false),
       useET(useET)
 {   
-    std::cout << "[Reactor::ctor] create reactor, MaxEvent="
-              << MaxEvent << " useET=" << (useET ? "true" : "false") << std::endl;
+    LOG_INFO("[Reactor::ctor] create reactor, MaxEvent="
+             << MaxEvent << " useET=" << (useET ? "true" : "false"));
 
     epfd_ = epoll_create1(EPOLL_CLOEXEC);
 
     if (epfd_ == -1) {
         perror("epoll_create1");
-        std::cerr << "[Reactor::ctor] epoll_create1 failed: "
-                  << strerror(errno) << std::endl;
+        LOG_ERROR("[Reactor::ctor] epoll_create1 failed: "
+                  << strerror(errno));
         throw std::runtime_error("epoll_create1 failed");
     }
 
     evfd_ = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (evfd_ == -1) {
         perror("eventfd");
-        std::cerr << "[Reactor::ctor] eventfd create failed: "
-                  << strerror(errno) << std::endl;
+        LOG_ERROR("[Reactor::ctor] eventfd create failed: "
+                  << strerror(errno));
         ::close(epfd_);
         throw std::runtime_error("eventfd failed");
     }
@@ -90,28 +91,28 @@ reactor::reactor(int MaxEvent, bool useET)
     ev.events  = EPOLLIN;
     if (::epoll_ctl(epfd_, EPOLL_CTL_ADD, evfd_, &ev) == -1) {
         perror("epoll_ctl ADD evfd");
-        std::cerr << "[Reactor::ctor] epoll_ctl add evfd failed: "
-                  << strerror(errno) << std::endl;
+        LOG_ERROR("[Reactor::ctor] epoll_ctl add evfd failed: "
+                  << strerror(errno));
         ::close(evfd_);
         ::close(epfd_);
         throw std::runtime_error("epoll_ctl add eventfd failed");
     }
 
-    std::cout << "[Reactor::ctor] reactor init OK, epfd=" << epfd_
-              << " evfd=" << evfd_ << std::endl;
+    LOG_INFO("[Reactor::ctor] reactor init OK, epfd=" << epfd_
+             << " evfd=" << evfd_);
 }
 
 reactor::~reactor(){
-    std::cout << "[Reactor::dtor] destroy reactor" << std::endl;
+    LOG_INFO("[Reactor::dtor] destroy reactor");
     stop();
     if(evfd_ != -1) {
         ::close(evfd_);
-        std::cout << "[Reactor::dtor] evfd_ closed: " << evfd_ << std::endl;
+        LOG_INFO("[Reactor::dtor] evfd_ closed: " << evfd_);
         evfd_ = -1;
     }
     if(epfd_ != -1) {
         ::close(epfd_);
-        std::cout << "[Reactor::dtor] epfd_ closed: " << epfd_ << std::endl;
+        LOG_INFO("[Reactor::dtor] epfd_ closed: " << epfd_);
         epfd_ = -1;
     }
 }
@@ -123,8 +124,8 @@ bool reactor::addFd(int fd, uint32_t events, void* user){
     ev.events  = events | (useET ? EPOLLET : 0);
     if (::epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1) {
         perror("epoll_ctl ADD");
-        std::cerr << "[Reactor::addFd] epoll_ctl ADD fd=" << fd
-                  << " failed: " << strerror(errno) << std::endl;
+        LOG_ERROR("[Reactor::addFd] epoll_ctl ADD fd=" << fd
+                  << " failed: " << strerror(errno));
         return false;
     }
 
@@ -133,9 +134,9 @@ bool reactor::addFd(int fd, uint32_t events, void* user){
         users_[fd] = user;
     }
 
-    std::cout << "[Reactor::addFd] fd=" << fd
-              << " events=" << std::hex << events << std::dec
-              << " useET=" << (useET ? "true" : "false") << std::endl;
+    LOG_DEBUG("[Reactor::addFd] fd=" << fd
+              << " events=0x" << std::hex << events << std::dec
+              << " useET=" << (useET ? "true" : "false"));
 
     // 建议外部自行保证 fd 已非阻塞
     return true;
@@ -149,8 +150,8 @@ bool reactor::modFd(int fd, uint32_t events, void* user){
     ev.events  = events | (useET ? EPOLLET : 0);
     if (::epoll_ctl(epfd_, EPOLL_CTL_MOD, fd, &ev) == -1) {
         perror("epoll_ctl MOD");
-        std::cerr << "[Reactor::modFd] epoll_ctl MOD fd=" << fd
-                  << " failed: " << strerror(errno) << std::endl;
+        LOG_ERROR("[Reactor::modFd] epoll_ctl MOD fd=" << fd
+                  << " failed: " << strerror(errno));
         return false;
     }
 
@@ -159,9 +160,9 @@ bool reactor::modFd(int fd, uint32_t events, void* user){
         users_[fd] = user;
     }
 
-    std::cout << "[Reactor::modFd] fd=" << fd
-              << " events=" << std::hex << events << std::dec
-              << " useET=" << (useET ? "true" : "false") << std::endl;
+    LOG_DEBUG("[Reactor::modFd] fd=" << fd
+              << " events=0x" << std::hex << events << std::dec
+              << " useET=" << (useET ? "true" : "false"));
 
     // 建议外部自行保证 fd 已非阻塞
     return true;
@@ -174,12 +175,12 @@ bool reactor::delFd(int fd){
         // 若已被对端关闭，DEL 失败不致命, ebadf, enoent
         if (errno != EBADF && errno != ENOENT) {
             perror("epoll_ctl DEL");
-            std::cerr << "[Reactor::delFd] epoll_ctl DEL fd=" << fd
-                      << " failed: " << strerror(errno) << std::endl;
+            LOG_ERROR("[Reactor::delFd] epoll_ctl DEL fd=" << fd
+                      << " failed: " << strerror(errno));
             return false;
         } else {
-            std::cout << "[Reactor::delFd] epoll_ctl DEL fd=" << fd
-                      << " ignored errno=" << errno << std::endl;
+            LOG_DEBUG("[Reactor::delFd] epoll_ctl DEL fd=" << fd
+                      << " ignored errno=" << errno);
         }
     }
     {
@@ -187,7 +188,7 @@ bool reactor::delFd(int fd){
         users_.erase(fd);
     }
 
-    std::cout << "[Reactor::delFd] fd=" << fd << " removed from epoll and users_\n";
+    LOG_INFO("[Reactor::delFd] fd=" << fd << " removed from epoll and users_");
     return true;
 }
 
@@ -197,10 +198,10 @@ void reactor::wakeup(){
     //写入唤醒epoll_wait();
     ssize_t n = ::write(evfd_, &one, sizeof(one));
     if (n != sizeof(one)) {
-        std::cerr << "[Reactor::wakeup] write to evfd_ failed, n=" << n
-                  << " errno=" << errno << " (" << strerror(errno) << ")\n";
+        LOG_ERROR("[Reactor::wakeup] write to evfd_ failed, n=" << n
+                  << " errno=" << errno << " (" << strerror(errno) << ")");
     } else {
-        std::cout << "[Reactor::wakeup] wakeup sent to evfd_=" << evfd_ << std::endl;
+        LOG_DEBUG("[Reactor::wakeup] wakeup sent to evfd_=" << evfd_);
     }
     // (void)n 的真正作用：消除未使用变量警告
     (void) n;
@@ -208,10 +209,10 @@ void reactor::wakeup(){
 
 void reactor::loop(){
     if (!dispatcher_) {
-        std::cerr << "Reactor: dispatcher not set\n";
+        LOG_ERROR("Reactor: dispatcher not set");
         return;
     }
-    std::cout << "[Reactor::loop] event loop start\n";
+    LOG_INFO("[Reactor::loop] event loop start");
 
     running_.store(true, std::memory_order_release);
     //这是为了让其它线程修改 running_ 时，
@@ -225,22 +226,22 @@ void reactor::loop(){
         int n = ::epoll_wait(epfd_, eventList_.data(), static_cast<int>(eventList_.size()), -1);
         if (n < 0) {
             if (errno == EINTR) {
-                std::cout << "[Reactor::loop] epoll_wait interrupted by signal, retry\n";
+                LOG_DEBUG("[Reactor::loop] epoll_wait interrupted by signal, retry");
                 continue;
             }
             perror("epoll_wait");
-            std::cerr << "[Reactor::loop] epoll_wait error: "
-                      << strerror(errno) << std::endl;
+            LOG_ERROR("[Reactor::loop] epoll_wait error: "
+                      << strerror(errno));
             break;
         }
 
         if (n == 0) {
             // 理论上 timeout=-1 不会到这里，这里只是保险
-            std::cout << "[Reactor::loop] epoll_wait returns 0 (no events)\n";
+            LOG_DEBUG("[Reactor::loop] epoll_wait returns 0 (no events)");
             continue;
         }
 
-        std::cout << "[Reactor::loop] epoll_wait returns n=" << n << " events\n";
+        LOG_DEBUG("[Reactor::loop] epoll_wait returns n=" << n << " events");
         
         for(int i = 0; i < n; ++i){
             int fd = eventList_[i].data.fd;
@@ -252,8 +253,8 @@ void reactor::loop(){
             // 就像你有需求像领导汇报，
             // 肯定得汇报给某个leader然后他再去汇报
             if(fd == evfd_){
-                std::cout << "[Reactor::loop] got wakeup event on evfd_=" << evfd_
-                          << " events=" << std::hex << events << std::dec << std::endl;
+                LOG_DEBUG("[Reactor::loop] got wakeup event on evfd_=" << evfd_
+                          << " events=0x" << std::hex << events << std::dec);
                 // 消耗唤醒信号
                 //因为本生我的eventFd就是用来唤醒epoll这一个作用，
                 // 如果这次不读完eventfd里面的计数的话，
@@ -271,25 +272,25 @@ void reactor::loop(){
                 if (temp != users_.end()) user = temp->second;
             }
 
-            std::cout << "[Reactor::loop] dispatch fd=" << fd
-                      << " events=" << std::hex << events << std::dec
-                      << " user=" << user << std::endl;
+            LOG_DEBUG("[Reactor::loop] dispatch fd=" << fd
+                      << " events=0x" << std::hex << events << std::dec
+                      << " user=" << user);
 
             // 交给上层派发（Server::Dispatch）
             dispatcher_(fd, events, user);
         }
     }
 
-    std::cout << "[Reactor::loop] event loop exit\n";
+    LOG_INFO("[Reactor::loop] event loop exit");
 }
 
 void reactor::stop(){
     bool expected = true;
     if(running_.compare_exchange_strong(expected, false, std::memory_order_acq_rel)){
-        std::cout << "[Reactor::stop] set running_=false, wakeup loop\n";
+        LOG_INFO("[Reactor::stop] set running_=false, wakeup loop");
         wakeup();// 唤醒 epoll_wait 退出, stop -> loop(),running_.load(std::memory_order_acquire)
     } else {
-        std::cout << "[Reactor::stop] already stopped (running_ was false)\n";
+        LOG_DEBUG("[Reactor::stop] already stopped (running_ was false)");
     }
 }
 
@@ -301,9 +302,9 @@ bool reactor::setDispatcher(std::function<void(int, uint32_t, void*)> cb)
 {
     dispatcher_ = std::move(cb);
     if (!dispatcher_) {
-        std::cerr << "[Reactor::setDispatcher] dispatcher is empty\n";
+        LOG_ERROR("[Reactor::setDispatcher] dispatcher is empty");
         return false;
     }
-    std::cout << "[Reactor::setDispatcher] dispatcher set OK\n";
+    LOG_INFO("[Reactor::setDispatcher] dispatcher set OK");
     return true;
 }

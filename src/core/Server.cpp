@@ -1,4 +1,5 @@
 #include "core/Server.h"
+#include "core/Logger.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -23,7 +24,7 @@ bool Server::start() {
     bool expected = false;
     if (!running_.compare_exchange_strong(expected, true)) {
         // 已经在运行了，直接返回 true
-        std::cout << "[Server::start] already running on port " << port_ << "\n";
+        LOG_INFO("[Server::start] already running on port " << port_);
         return true;
     }
 
@@ -33,7 +34,7 @@ bool Server::start() {
 
         if (listenFd_ < 0) {
             perror("socket");
-            std::cerr << "[Server::start] socket create failed: " << strerror(errno) << "\n";
+            LOG_ERROR("[Server::start] socket create failed: " << strerror(errno));
             break;
         }
 
@@ -43,7 +44,8 @@ bool Server::start() {
         ::setsockopt(listenFd_, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
     #endif
         if (!setNonBlock(listenFd_)) {
-            std::cerr << "[Server::start] setNonBlock(listenfd) failed\n";
+            LOG_ERROR("[Server::start] setNonBlock(listenfd) failed");
+        
             ::close(listenFd_);
             listenFd_ = -1;
             // 失败走统一收尾逻辑
@@ -63,20 +65,20 @@ bool Server::start() {
         → “我知道风险，我硬要把 A 当 B 用”*/
         if (::bind(listenFd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
             perror("bind");
-            std::cerr << "[Server::start] bind failed: " << strerror(errno) << "\n";
+            LOG_ERROR("[Server::start] bind failed: " << strerror(errno));
             break;
         }
 
         //n -> 允许同时连接的客户端数量
         if (::listen(listenFd_, 128) < 0) {
             perror("listen");
-            std::cerr << "[Server::start] listen failed: " << strerror(errno) << "\n";
+            LOG_ERROR("[Server::start] listen failed: " << strerror(errno));
             break;
         }
 
         // 把监听 fd 加入 epoll，才能收到连接事件
         if (!reactor_.addFd(listenFd_, EPOLLIN, nullptr)) {
-            std::cerr << "[Server::start] reactor add listenFd_ failed\n";
+            LOG_ERROR("[Server::start] reactor add listenFd_ failed");
             break;
         }
         
@@ -87,6 +89,8 @@ bool Server::start() {
 
         std::cout << "[Server::start] Server listening on port " << port_
                   << " (ET=" << (useET_ ? "on" : "off") << ")\n";
+        LOG_INFO("[Server::start] Server listening on port " << port_
+                 << " (ET=" << (useET_ ? "on" : "off") << ")");
         ok = true;
     } while (false);
 
@@ -97,7 +101,7 @@ bool Server::start() {
             listenFd_ = -1;
         }
         running_.store(false); // 失败要把 running_ 还原
-        std::cerr << "[Server::start] start failed, server not running\n";
+        LOG_ERROR("[Server::start] start failed, server not running");
     }
     return ok;
 }
@@ -107,22 +111,25 @@ bool Server::start() {
 void Server::stop() {
     // 如果之前已经是 false，说明本来就没在跑，直接返回
     if (!running_.exchange(false)) {
-        std::cout << "[Server::stop] server already stopped\n";
+        LOG_INFO("[Server::stop] server already stopped");
         return;
     }
 
     std::cout << "[Server::stop] stopping server on port " << port_ << "\n";
+    LOG_INFO("[Server::stop] stopping server on port " << port_);
 
     if (listenFd_ != -1) {
         reactor_.delFd(listenFd_);
         ::close(listenFd_);
         listenFd_ = -1;
         std::cout << "[Server::stop] listenFd_ closed\n";
+        LOG_INFO("[Server::stop] listenFd_ closed");
     }
 
     //conns_ 是多线程共享容器，必须加锁，否则会在 stop() 清理时被其他线程同时修改导致崩溃。
     std::lock_guard<std::mutex> lock(conns_mtx_);
     std::cout << "[Server::stop] closing " << conns_.size() << " active connections\n";
+    LOG_INFO("[Server::stop] closing " << conns_.size() << " active connections");
     for (auto& kv : conns_) {
         int fd = kv.first;
         reactor_.delFd(fd);
@@ -135,7 +142,7 @@ void Server::stop() {
 void Server::onEvent(int fd, uint32_t events, void* user) {
     // 错误/挂起优先处理
     if (events & (EPOLLERR | EPOLLHUP)) {
-        std::cerr << "[Server::onEvent] EPOLLERR/EPOLLHUP on fd=" << fd << "\n";
+        LOG_ERROR("[Server::onEvent] EPOLLERR/EPOLLHUP on fd=" << fd);
         closeConn(fd);
         return;
     }
@@ -146,7 +153,7 @@ void Server::onEvent(int fd, uint32_t events, void* user) {
         如果没有这个事件，
         我的events & “事件”就是为0不会执行这个语句了*/
         if (events & EPOLLIN) {
-            std::cout << "[Server::onEvent] EPOLLIN on listenFd_, accepting new connections\n";
+            LOG_DEBUG("[Server::onEvent] EPOLLIN on listenFd_, accepting new connections");
             onAccept();
         }
         return;
@@ -164,7 +171,7 @@ void Server::onEvent(int fd, uint32_t events, void* user) {
         std::lock_guard<std::mutex> lock(conns_mtx_);
         auto it = conns_.find(fd);
         if (it == conns_.end()) {
-            std::cerr << "[Server::onEvent] fd=" << fd << " not found in conns_\n";
+            LOG_ERROR("[Server::onEvent] fd=" << fd << " not found in conns_");
             return;
         }
         p_holder = &it->second;
@@ -186,22 +193,25 @@ void Server::onAccept() {
             //客户端全部被我的加完了，已经没有客户端去加了
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 // 全部接完
-                std::cout << "[Server::onAccept] no more clients to accept (EAGAIN/EWOULDBLOCK)\n";
+                LOG_DEBUG("[Server::onAccept] no more clients to accept (EAGAIN/EWOULDBLOCK)");
                 break;
             }
             perror("accept");
-            std::cerr << "[Server::onAccept] accept error: " << strerror(errno) << "\n";
+            LOG_ERROR("[Server::onAccept] accept error: " << strerror(errno));
             break;
         }
 
         char ipstr[64] = {0};
         ::inet_ntop(AF_INET, &client_addr.sin_addr, ipstr, sizeof(ipstr));
         int cport = ntohs(client_addr.sin_port);
+
         std::cout << "[Server::onAccept] new connection fd=" << clientfd
                   << " from " << ipstr << ":" << cport << "\n";
+        LOG_INFO("[Server::onAccept] new connection fd=" << clientfd
+                 << " from " << ipstr << ":" << cport);
 
         if (!setNonBlock(clientfd)) {
-            std::cerr << "[Server::onAccept] setNonBlock(" << clientfd << ") failed, close\n";
+            LOG_ERROR("[Server::onAccept] setNonBlock(" << clientfd << ") failed, close");
             ::close(clientfd);
             continue;
         }
@@ -212,8 +222,8 @@ void Server::onAccept() {
         conn->fd = clientfd;
         //默认没有登陆
         conn->authed = false;
-        conn->userId = 0;           // 暂时不用,用了MYSQL已实现功能
-        conn->name.clear();         // 暂时为空,用了MYSQL已实现功能
+        conn->userId = 0;           // MYSQL已实现功能
+        conn->name.clear();         // MYSQL已实现功能
         conn->roomId = 0;           // 暂时不分房间,还没有实现的
         Connection* user_ptr = conn.get();
 
@@ -223,7 +233,7 @@ void Server::onAccept() {
         }
 
         if (!reactor_.addFd(clientfd, EPOLLIN, user_ptr)) {
-            std::cerr << "[Server::onAccept] reactor addFd(" << clientfd << ") failed, close\n";
+            LOG_ERROR("[Server::onAccept] reactor addFd(" << clientfd << ") failed, close");
             std::lock_guard<std::mutex> lock(conns_mtx_);
             conns_.erase(clientfd);
             ::close(clientfd);
@@ -240,25 +250,26 @@ void Server::onConnRead(Connection& conn) {
         ssize_t n = ::read(conn.fd, buff, sizeof(buff));
         if (n > 0) {
             conn.inbuf.append(buff, n);
-            std::cout << "[Server::onConnRead] fd=" << conn.fd
-                      << " read " << n << " bytes, inbuf size=" << conn.inbuf.size() << "\n";
+            LOG_DEBUG("[Server::onConnRead] fd=" << conn.fd
+                      << " read " << n << " bytes, inbuf size=" << conn.inbuf.size());
             continue;
         }
         if (n == 0) {
             // 对端关闭
-            std::cout << "[Server::onConnRead] fd=" << conn.fd << " peer closed\n";
+            LOG_INFO("[Server::onConnRead] fd=" << conn.fd << " peer closed");
             closeConn(conn.fd);
             return;
         }
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             // 读尽
-            std::cout << "[Server::onConnRead] fd=" << conn.fd << " read all data (EAGAIN/EWOULDBLOCK)\n";
+            LOG_DEBUG("[Server::onConnRead] fd=" << conn.fd
+                      << " read all data (EAGAIN/EWOULDBLOCK)");
             break;
         }
 
         perror("read");
-        std::cerr << "[Server::onConnRead] read error on fd=" << conn.fd
-                  << ": " << strerror(errno) << "\n";
+        LOG_ERROR("[Server::onConnRead] read error on fd=" << conn.fd
+                  << ": " << strerror(errno));
         closeConn(conn.fd);
         return; // 读出错直接结束，不再解析 inbuf
     }
@@ -278,8 +289,8 @@ void Server::onConnRead(Connection& conn) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
         pos = nlocation + 1;
 
-        std::cout << "[Server::onConnRead] fd=" << conn.fd
-                  << " got one line: " << line << "\n";
+        LOG_DEBUG("[Server::onConnRead] fd=" << conn.fd
+                  << " got one line: " << line);
 
         /*现在这个版本加入了线程池*/
         Threadpool_->Enqueue([this, fd = conn.fd, line]() {
@@ -289,16 +300,16 @@ void Server::onConnRead(Connection& conn) {
                 auto it = conns_.find(fd);
                 if (it == conns_.end()) {
                     //表示连接关闭
-                    std::cerr << "[Server::worker] fd=" << fd
-                              << " not found in conns_ (maybe closed)\n";
+                    LOG_ERROR("[Server::worker] fd=" << fd
+                              << " not found in conns_ (maybe closed)");
                     return;
                 }
                 c = it->second.get();
             }
 
             // 业务处理（耗时部分）
-            std::cout << "[Server::worker] handling line for fd=" << fd
-                      << " content: " << line << "\n";
+            LOG_DEBUG("[Server::worker] handling line for fd=" << fd
+                      << " content: " << line);
 
             std::string out = msgHandler_.handleMessage(*c, line);
 
@@ -307,8 +318,8 @@ void Server::onConnRead(Connection& conn) {
                 json resp = json::parse(out);
                 isClose   = resp.value("close", false);
             } catch (const std::exception& e) {
-                std::cerr << "[Server::worker] json parse error on response for fd="
-                          << fd << ": " << e.what() << "\n";
+                LOG_ERROR("[Server::worker] json parse error on response for fd="
+                          << fd << ": " << e.what());
             }
             
             // 写回事件一定要在 Server 线程安全里做
@@ -318,8 +329,8 @@ void Server::onConnRead(Connection& conn) {
                 auto it = conns_.find(fd);
                 if (it != conns_.end()) {
                     it->second->shortClose.store(true);
-                    std::cout << "[Server::worker] fd=" << fd
-                              << " marked shortClose=true (will close after write)\n";
+                    LOG_DEBUG("[Server::worker] fd=" << fd
+                              << " marked shortClose=true (will close after write)");
                 }
             }
         });
@@ -332,27 +343,27 @@ void Server::onConnWrite(Connection& c) {
         if (c.outbuf.empty()) break;
         ssize_t n = ::write(c.fd, c.outbuf.data(), c.outbuf.size());
         if (n > 0) {
-            std::cout << "[Server::onConnWrite] fd=" << c.fd
-                      << " wrote " << n << " bytes, left=" << (c.outbuf.size() - n) << "\n";
+            LOG_DEBUG("[Server::onConnWrite] fd=" << c.fd
+                      << " wrote " << n << " bytes, left=" << (c.outbuf.size() - n));
             c.outbuf.erase(0, static_cast<size_t>(n));
             continue;
         }
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             // 还能写下次再来
-            std::cout << "[Server::onConnWrite] fd=" << c.fd
-                      << " cannot write more now (EAGAIN/EWOULDBLOCK)\n";
+            LOG_DEBUG("[Server::onConnWrite] fd=" << c.fd
+                      << " cannot write more now (EAGAIN/EWOULDBLOCK)");
             break;
         }
         perror("write");
-        std::cerr << "[Server::onConnWrite] write error on fd=" << c.fd
-                  << ": " << strerror(errno) << "\n";
+        LOG_ERROR("[Server::onConnWrite] write error on fd=" << c.fd
+                  << ": " << strerror(errno));
         closeConn(c.fd);
         return;
     }
 
     if (c.outbuf.empty() && c.shortClose) {
-        std::cout << "[Server::onConnWrite] fd=" << c.fd
-                  << " outbuf empty and shortClose=true, closing\n";
+        LOG_INFO("[Server::onConnWrite] fd=" << c.fd
+                 << " outbuf empty and shortClose=true, closing");
         closeConn(c.fd);
     }
 
@@ -360,8 +371,8 @@ void Server::onConnWrite(Connection& c) {
         c.wantWrite.store(false);
         // 只保留读事件（user 传 nullptr 表示不改）
         reactor_.modFd(c.fd, EPOLLIN, nullptr);
-        std::cout << "[Server::onConnWrite] fd=" << c.fd
-                  << " write finished, disable EPOLLOUT\n";
+        LOG_DEBUG("[Server::onConnWrite] fd=" << c.fd
+                  << " write finished, disable EPOLLOUT");
     }
 }
 
@@ -371,12 +382,12 @@ void Server::closeConn(int fd) {
         std::lock_guard<std::mutex> lock(conns_mtx_);
         auto it = conns_.find(fd);
         if (it == conns_.end()) {
-            std::cerr << "[Server::closeConn] fd=" << fd << " not found in conns_\n";
+            LOG_ERROR("[Server::closeConn] fd=" << fd << " not found in conns_");
             return;
         }
     }
 
-    std::cout << "[Server::closeConn] closing fd=" << fd << "\n";
+    LOG_INFO("[Server::closeConn] closing fd=" << fd);
 
     reactor_.delFd(fd);
     ::close(fd);
@@ -392,19 +403,19 @@ void Server::postWrite(int fd, std::string data) {
     std::unique_lock<std::mutex> lk(conns_mtx_);
     auto it = conns_.find(fd);
     if (it == conns_.end()) {
-        std::cerr << "[Server::postWrite] fd=" << fd << " not found in conns_\n";
+        LOG_ERROR("[Server::postWrite] fd=" << fd << " not found in conns_");
         return; // 连接已关
     }
     Connection& c = *it->second;
 
-    std::cout << "[Server::postWrite] fd=" << fd
-              << " append " << data.size() << " bytes to outbuf\n";
+    LOG_DEBUG("[Server::postWrite] fd=" << fd
+              << " append " << data.size() << " bytes to outbuf");
 
     c.outbuf.append(data);
     if (!c.wantWrite) {
         c.wantWrite.store(true);
-        std::cout << "[Server::postWrite] fd=" << fd
-                  << " enable EPOLLOUT and wakeup reactor\n";
+        LOG_DEBUG("[Server::postWrite] fd=" << fd
+                  << " enable EPOLLOUT and wakeup reactor");
         // 正确顺序：先改 epoll 事件，再唤醒 reactor
         reactor_.modFd(fd, EPOLLIN | EPOLLOUT, &c);
         reactor_.wakeup();
@@ -415,13 +426,13 @@ void Server::postWrite(int fd, std::string data) {
 bool Server::setNonBlock(int fd) {
     int fl = fcntl(fd, F_GETFL, 0);
     if (fl == -1) {
-        std::cerr << "[Server::setNonBlock] F_GETFL failed on fd=" << fd
-                  << ": " << strerror(errno) << "\n";
+        LOG_ERROR("[Server::setNonBlock] F_GETFL failed on fd=" << fd
+                  << ": " << strerror(errno));
         return false;
     }
     if (fcntl(fd, F_SETFL, fl | O_NONBLOCK) == -1) {
-        std::cerr << "[Server::setNonBlock] F_SETFL O_NONBLOCK failed on fd=" << fd
-                  << ": " << strerror(errno) << "\n";
+        LOG_ERROR("[Server::setNonBlock] F_SETFL O_NONBLOCK failed on fd=" << fd
+                  << ": " << strerror(errno));
         return false;
     }
     int fdflags = fcntl(fd, F_GETFD, 0);
@@ -433,8 +444,8 @@ bool Server::setNonBlock(int fd) {
 bool Server::setTcpNoDelay(int fd) {
     int one = 1;
     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) != 0) {
-        std::cerr << "[Server::setTcpNoDelay] setsockopt TCP_NODELAY failed on fd=" << fd
-                  << ": " << strerror(errno) << "\n";
+        LOG_ERROR("[Server::setTcpNoDelay] setsockopt TCP_NODELAY failed on fd=" << fd
+                  << ": " << strerror(errno));
         return false;
     }
     return true;

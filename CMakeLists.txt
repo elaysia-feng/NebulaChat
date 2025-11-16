@@ -38,6 +38,7 @@ add_executable(NebulaChat
     src/db/DBconnection.cpp
     src/db/DBpool.cpp
 )
+target_include_directories(NebulaChat PRIVATE include)
 
 # 链接 pthread + mysqlclient
 target_link_libraries(NebulaChat

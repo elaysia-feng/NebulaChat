@@ -1,0 +1,63 @@
+2025-11-16 14:32:18 | INFO | [DBPool::init] start init: host=127.0.0.1 port=3306 user=root db=serverlogin poolSize=10
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463b125b0
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463b125b0
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463bc9ed0
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463bc9ed0
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c15040
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c15040
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c2cc80
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c2cc80
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c42d00
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c42d00
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c597a0
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c597a0
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c70220
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c70220
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c86ca0
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c86ca0
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463c9d720
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463c9d720
+2025-11-16 14:32:18 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x579463cb3930
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-16 14:32:18 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x579463cb3930
+2025-11-16 14:32:18 | INFO | [DBPool::init] init OK, success=10 / poolSize=10
+2025-11-16 14:32:18 | INFO | [Reactor::ctor] create reactor, MaxEvent=1024 useET=true
+2025-11-16 14:32:18 | INFO | [Reactor::ctor] reactor init OK, epfd=17 evfd=18
+2025-11-16 14:32:18 | INFO | [ThreadPool::ThreadPool] create thread pool, threads=4, maxTasks=1024
+2025-11-16 14:32:18 | INFO | [ThreadPool::run] starting workers, count=4
+2025-11-16 14:32:18 | INFO | [Reactor::setDispatcher] dispatcher set OK
+2025-11-16 14:32:18 | INFO | [Server::start] Server listening on port 8888 (ET=on)
+2025-11-16 14:32:18 | INFO | [Reactor::loop] event loop start
+2025-11-16 14:32:18 | INFO | [ThreadPool::RunPool] worker thread 123437129397824 start
+2025-11-16 14:32:18 | INFO | [ThreadPool::RunPool] worker thread 123437121005120 start
+2025-11-16 14:32:18 | INFO | [ThreadPool::RunPool] worker thread 123437112612416 start
+2025-11-16 14:32:18 | INFO | [ThreadPool::RunPool] worker thread 123437104219712 start
+2025-11-16 14:32:50 | INFO | [Server::stop] stopping server on port 8888
+2025-11-16 14:32:50 | INFO | [Reactor::delFd] fd=19 removed from epoll and users_
+2025-11-16 14:32:50 | INFO | [Server::stop] listenFd_ closed
+2025-11-16 14:32:50 | INFO | [Server::stop] closing 0 active connections
+2025-11-16 14:32:50 | INFO | [Reactor::stop] set running_=false, wakeup loop
+2025-11-16 14:32:50 | INFO | [Reactor::loop] event loop exit
+2025-11-16 14:32:50 | INFO | [Server::stop] server already stopped
+2025-11-16 14:32:50 | INFO | [ThreadPool::~ThreadPool] stopping thread pool...
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker 123437129397824 exits because pool stopped
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker thread 123437129397824 exit
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker 123437121005120 exits because pool stopped
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker thread 123437121005120 exit
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker 123437112612416 exits because pool stopped
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker thread 123437112612416 exit
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker 123437104219712 exits because pool stopped
+2025-11-16 14:32:50 | INFO | [ThreadPool::RunPool] worker thread 123437104219712 exit
+2025-11-16 14:32:50 | INFO | [ThreadPool::~ThreadPool] all worker threads joined
+2025-11-16 14:32:50 | INFO | [Reactor::dtor] destroy reactor
+2025-11-16 14:32:50 | INFO | [Reactor::dtor] evfd_ closed: 18
+2025-11-16 14:32:50 | INFO | [Reactor::dtor] epfd_ closed: 17
