@@ -222,8 +222,9 @@ CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: ../src/chat/AuthService.cp
   /usr/include/c++/11/bits/vector.tcc \
   /usr/include/c++/11/bits/stl_heap.h \
   /usr/include/c++/11/bits/stl_queue.h \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/ostream \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -240,9 +241,33 @@ CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: ../src/chat/AuthService.cp
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/istream \
-  /usr/include/c++/11/bits/istream.tcc
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o: ../src/chat/MessageHandler.cpp \
   /usr/include/stdc-predef.h \
@@ -806,23 +831,9 @@ CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o: ../src/core/Reactor.cpp \
   /usr/include/c++/11/bits/stl_heap.h \
   /usr/include/c++/11/bits/stl_tempbuf.h \
   /usr/include/c++/11/bits/uniform_int_dist.h \
-  /usr/include/unistd.h \
-  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
-  /usr/include/x86_64-linux-gnu/bits/environments.h \
-  /usr/include/x86_64-linux-gnu/bits/confname.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
-  /usr/include/linux/close_range.h \
-  /usr/include/fcntl.h \
-  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
-  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
-  /usr/include/linux/falloc.h \
-  /usr/include/x86_64-linux-gnu/bits/stat.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/ostream \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -839,14 +850,56 @@ CMakeFiles/NebulaChat.dir/src/core/Reactor.cpp.o: ../src/core/Reactor.cpp \
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/istream \
   /usr/include/c++/11/bits/istream.tcc \
-  /usr/include/x86_64-linux-gnu/sys/eventfd.h \
-  /usr/include/x86_64-linux-gnu/bits/eventfd.h \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/bits/unique_ptr.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
   /usr/include/c++/11/cstring \
   /usr/include/string.h \
-  /usr/include/strings.h
+  /usr/include/strings.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/linux/close_range.h \
+  /usr/include/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+  /usr/include/linux/falloc.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
+  /usr/include/c++/11/iostream \
+  /usr/include/x86_64-linux-gnu/sys/eventfd.h \
+  /usr/include/x86_64-linux-gnu/bits/eventfd.h
 
 CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o: ../src/core/Server.cpp \
   /usr/include/stdc-predef.h \
@@ -1208,6 +1261,11 @@ CMakeFiles/NebulaChat.dir/src/core/Server.cpp.o: ../src/core/Server.cpp \
   /usr/include/nlohmann/detail/macro_unscope.hpp \
   /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
   ../include/chat/AuthService.h \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
   /usr/include/x86_64-linux-gnu/sys/socket.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
   /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -1458,8 +1516,9 @@ CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o: ../src/core/ThreadPool.cpp 
   /usr/include/c++/11/bits/algorithmfwd.h \
   /usr/include/c++/11/bits/stl_tempbuf.h \
   /usr/include/c++/11/bits/uniform_int_dist.h \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/ostream \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -1476,9 +1535,33 @@ CMakeFiles/NebulaChat.dir/src/core/ThreadPool.cpp.o: ../src/core/ThreadPool.cpp 
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/istream \
-  /usr/include/c++/11/bits/istream.tcc
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: ../src/db/DBconnection.cpp \
   /usr/include/stdc-predef.h \
@@ -1676,8 +1759,9 @@ CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: ../src/db/DBconnection.cpp 
   /usr/include/c++/11/backward/auto_ptr.h \
   /usr/include/c++/11/pstl/glue_memory_defs.h \
   /usr/include/c++/11/pstl/execution_defs.h \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/ostream \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -1697,9 +1781,41 @@ CMakeFiles/NebulaChat.dir/src/db/DBconnection.cpp.o: ../src/db/DBconnection.cpp 
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/istream \
-  /usr/include/c++/11/bits/istream.tcc
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/mutex \
+  /usr/include/c++/11/chrono \
+  /usr/include/c++/11/ratio \
+  /usr/include/c++/11/limits \
+  /usr/include/c++/11/ctime \
+  /usr/include/c++/11/bits/parse_numbers.h \
+  /usr/include/c++/11/bits/std_mutex.h \
+  /usr/include/c++/11/bits/unique_lock.h \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: ../src/db/DBpool.cpp \
   /usr/include/stdc-predef.h \
@@ -1921,8 +2037,9 @@ CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: ../src/db/DBpool.cpp \
   /usr/include/c++/11/bits/vector.tcc \
   /usr/include/c++/11/bits/stl_heap.h \
   /usr/include/c++/11/bits/stl_queue.h \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/ostream \
+  ../include/core/Logger.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -1939,9 +2056,33 @@ CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.o: ../src/db/DBpool.cpp \
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/istream \
-  /usr/include/c++/11/bits/istream.tcc
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/stdc-predef.h \
@@ -2387,8 +2528,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/asm-generic/sockios.h:
 
-/usr/include/asm-generic/posix_types.h:
-
 /usr/include/x86_64-linux-gnu/asm/posix_types.h:
 
 /usr/include/linux/posix_types.h:
@@ -2443,8 +2582,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/nlohmann/detail/output/serializer.hpp:
 
-/usr/include/nlohmann/detail/output/output_adapters.hpp:
-
 /usr/include/nlohmann/detail/output/binary_writer.hpp:
 
 /usr/include/nlohmann/detail/iterators/json_reverse_iterator.hpp:
@@ -2459,10 +2596,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/nlohmann/detail/input/input_adapters.hpp:
 
-/usr/include/signal.h:
-
-/usr/include/strings.h:
-
 /usr/include/x86_64-linux-gnu/bits/socket.h:
 
 /usr/include/nlohmann/detail/hash.hpp:
@@ -2470,30 +2603,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/nlohmann/byte_container_with_subtype.hpp:
 
 /usr/include/nlohmann/detail/conversions/to_json.hpp:
-
-/usr/include/c++/11/bits/fs_ops.h:
-
-/usr/include/c++/11/bits/fs_dir.h:
-
-/usr/include/c++/11/sstream:
-
-/usr/include/x86_64-linux-gnu/bits/signum-generic.h:
-
-/usr/include/c++/11/bits/quoted_string.h:
-
-/usr/include/c++/11/bits/locale_facets_nonio.tcc:
-
-/usr/include/libintl.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
-
-/usr/include/c++/11/bits/locale_facets_nonio.h:
-
-/usr/include/nlohmann/detail/json_pointer.hpp:
-
-/usr/include/c++/11/filesystem:
 
 /usr/include/nlohmann/detail/input/json_sax.hpp:
 
@@ -2516,10 +2625,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/nlohmann/thirdparty/hedley/hedley.hpp:
 
 /usr/include/nlohmann/detail/macro_scope.hpp:
-
-/usr/include/c++/11/bits/locale_conv.h:
-
-/usr/include/nlohmann/detail/exceptions.hpp:
 
 /usr/include/c++/11/bits/indirect_array.h:
 
@@ -2589,11 +2694,45 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/unordered_map.h:
 
+/usr/include/c++/11/bits/hashtable_policy.h:
+
+/usr/include/c++/11/bits/hashtable.h:
+
+/usr/include/c++/11/unordered_map:
+
+/usr/include/c++/11/bits/stl_algo.h:
+
+/usr/include/c++/11/algorithm:
+
+/usr/include/nlohmann/json.hpp:
+
+../include/chat/MessageHandler.h:
+
+../src/chat/MessageHandler.cpp:
+
+/usr/include/signal.h:
+
+/usr/include/strings.h:
+
+/usr/include/c++/11/bits/fs_ops.h:
+
+/usr/include/c++/11/bits/fs_dir.h:
+
+/usr/include/c++/11/sstream:
+
+/usr/include/x86_64-linux-gnu/bits/signum-generic.h:
+
+/usr/include/c++/11/bits/quoted_string.h:
+
 /usr/include/stdlib.h:
 
 /usr/include/c++/11/bits/string_view.tcc:
 
 /usr/include/c++/11/bits/functional_hash.h:
+
+/usr/include/nlohmann/detail/output/output_adapters.hpp:
+
+/usr/include/c++/11/fstream:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
 
@@ -2624,6 +2763,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/ext/atomicity.h:
 
 /usr/include/c++/11/bits/stl_pair.h:
+
+/usr/include/c++/11/bits/locale_facets_nonio.tcc:
 
 /usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
 
@@ -2657,11 +2798,9 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/deque.tcc:
 
-../src/chat/MessageHandler.cpp:
-
-/usr/include/c++/11/algorithm:
-
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+/usr/include/libintl.h:
 
 /usr/include/c++/11/pstl/glue_numeric_defs.h:
 
@@ -2775,6 +2914,14 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/pstl/pstl_config.h:
 
+/usr/include/c++/11/iostream:
+
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
+/usr/include/c++/11/bits/node_handle.h:
+
+/usr/include/mysql/mysql.h:
+
 /usr/include/c++/11/bits/char_traits.h:
 
 /usr/include/asm-generic/errno-base.h:
@@ -2815,14 +2962,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
-/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
-
-/usr/include/c++/11/iostream:
-
-/usr/include/mysql/mysql.h:
-
-/usr/include/c++/11/bits/node_handle.h:
-
 /usr/include/stdc-predef.h:
 
 /usr/include/c++/11/bits/alloc_traits.h:
@@ -2832,6 +2971,10 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/c++/11/bits/algorithmfwd.h:
+
+/usr/include/c++/11/pstl/execution_defs.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
@@ -2981,9 +3124,9 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/x86_64-linux-gnu/asm/sockios.h:
 
-/usr/include/c++/11/cstring:
-
 /usr/include/math.h:
+
+/usr/include/c++/11/cstring:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
@@ -3000,8 +3143,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/iomanip:
 
 /usr/include/c++/11/cctype:
-
-/usr/include/c++/11/unordered_map:
 
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
@@ -3064,6 +3205,10 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/bits/allocator.h:
 
 /usr/include/mysql/client_plugin.h:
+
+/usr/include/nlohmann/detail/exceptions.hpp:
+
+/usr/include/c++/11/bits/locale_conv.h:
 
 /usr/include/c++/11/stdlib.h:
 
@@ -3133,6 +3278,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/valarray_array.h:
 
+../include/core/Logger.h:
+
 ../include/core/SafeQueue.h:
 
 /usr/include/c++/11/thread:
@@ -3167,14 +3314,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/stl_deque.h:
 
-/usr/include/c++/11/bits/fs_fwd.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/c++/11/bits/stl_bvector.h:
-
 ../src/db/DBpool.cpp:
 
 /usr/include/nlohmann/detail/string_escape.hpp:
@@ -3184,6 +3323,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/bits/std_abs.h:
 
 /usr/include/c++/11/bits/stl_heap.h:
+
+/usr/include/c++/11/istream:
 
 /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h:
 
@@ -3215,23 +3356,7 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/locale_facets.tcc:
 
-/usr/include/c++/11/istream:
-
-/usr/include/c++/11/bits/istream.tcc:
-
-../include/chat/MessageHandler.h:
-
-/usr/include/nlohmann/json.hpp:
-
-/usr/include/c++/11/bits/stl_algo.h:
-
-/usr/include/c++/11/pstl/execution_defs.h:
-
-/usr/include/c++/11/bits/algorithmfwd.h:
-
-/usr/include/c++/11/bits/hashtable.h:
-
-/usr/include/c++/11/bits/hashtable_policy.h:
+/usr/include/c++/11/bits/enable_special_members.h:
 
 /usr/include/c++/11/bits/codecvt.h:
 
@@ -3239,4 +3364,30 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/bits/basic_ios.tcc:
 
-/usr/include/c++/11/bits/enable_special_members.h:
+/usr/include/c++/11/bits/istream.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/c++/11/bits/fstream.tcc:
+
+/usr/include/nlohmann/detail/json_pointer.hpp:
+
+/usr/include/c++/11/filesystem:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/c++/11/bits/stl_bvector.h:
+
+/usr/include/c++/11/bits/fs_fwd.h:
+
+/usr/include/c++/11/bits/locale_facets_nonio.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
