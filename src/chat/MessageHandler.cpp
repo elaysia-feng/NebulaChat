@@ -25,7 +25,34 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
         if (cmd == "login") {
             std::string user = rep.value("user", "");
             std::string pass = rep.value("pass", "");
+            std::string phone= rep.value("phone", "");
+            std::string code = rep.value("code", "");
 
+            // A. 如果带了 phone 但没带 code：先给这个手机号发验证码
+            //    相当于“我要用短信验证码方式登录，请先给我发一条”
+            if(!phone.empty() && code.empty()) {
+                SmsResult r = sms_.sendCode(phone);
+                resp["ok"]  = r.ok;
+                resp["msg"] = r.msg;
+                return resp.dump() + "\n";
+            } 
+            
+
+            // B. 如果 phone + code 都有：先校验验证码
+            if(!phone.empty() && !code.empty()) {
+                SmsResult r = sms_.verifyCode(phone, code);
+                if (!r.ok) {
+                resp["ok"]  = false;
+                resp["msg"] = r.msg;   // 验证码错/过期
+                return resp.dump() + "\n";
+                }
+            
+                resp["ok"]  = true;
+                resp["msg"] = "login success";   // 验证码错/过期
+                return resp.dump() + "\n";
+            }
+
+            // C. 走原来的用户名+密码登录逻辑
             int uid = 0;
             if (auth_.login(user, pass, uid)) {
                 c.authed = true;
@@ -58,27 +85,27 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 resp["msg"] = "register failed";
             }
         } 
-             // ---------------- send_sms ----------------
-        else if (cmd == "send_sms") {
-            std::string phone = rep.value("phone", "");
-            SmsResult r       = sms_.sendCode(phone);
-            resp["ok"]        = r.ok;
-            resp["msg"]       = r.msg;
-        }
+        //      // ---------------- send_sms ----------------
+        // else if (cmd == "send_sms") {
+        //     std::string phone = rep.value("phone", "");
+        //     SmsResult r       = sms_.sendCode(phone);
+        //     resp["ok"]        = r.ok;
+        //     resp["msg"]       = r.msg;
+        // }
 
-        // ---------------- verify_sms ----------------
-        else if (cmd == "verify_sms") {
-            std::string phone = rep.value("phone", "");
-            std::string code  = rep.value("code", "");
+        // // ---------------- verify_sms ----------------
+        // else if (cmd == "verify_sms") {
+        //     std::string phone = rep.value("phone", "");
+        //     std::string code  = rep.value("code", "");
 
-            SmsResult r = sms_.verifyCode(phone, code);
-            resp["ok"]  = r.ok;
-            resp["msg"] = r.msg;
+        //     SmsResult r = sms_.verifyCode(phone, code);
+        //     resp["ok"]  = r.ok;
+        //     resp["msg"] = r.msg;
 
-            // 这里以后可以选择：
-            // 验证成功后自动帮用户完成登录/注册逻辑
-            // 例如标记一个手机号已验证，或去调用 AuthService
-        }
+        //     // 这里以后可以选择：
+        //     // 验证成功后自动帮用户完成登录/注册逻辑
+        //     // 例如标记一个手机号已验证，或去调用 AuthService
+        // }
 
         // ---------------- echo ----------------
         else if (cmd == "echo") {
