@@ -282,6 +282,7 @@ CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o: \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/SmsService.h \
  /home/elias/vscode_code_all/NebulaChat/include/core/Server.h \
  /home/elias/vscode_code_all/NebulaChat/include/core/reactor.h \
  /usr/include/c++/11/mutex /usr/include/c++/11/bits/std_mutex.h \

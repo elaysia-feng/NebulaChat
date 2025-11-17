@@ -2444,6 +2444,15 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/nlohmann/detail/macro_unscope.hpp \
   /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
   ../include/chat/AuthService.h \
+  ../include/chat/SmsService.h \
+  ../include/db/RedisPool.h \
+  ../include/db/RedisConnection.h \
+  /usr/include/hiredis/hiredis.h \
+  /usr/include/hiredis/read.h \
+  /usr/include/x86_64-linux-gnu/sys/time.h \
+  /usr/include/hiredis/sds.h \
+  /usr/include/hiredis/alloc.h \
+  /usr/include/c++/11/stdlib.h \
   ../include/db/DBpool.h \
   ../include/db/DBconnection.h \
   /usr/include/mysql/mysql.h \
@@ -2455,7 +2464,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/mysql/my_compress.h \
   /usr/include/mysql/udf_registration_types.h \
   /usr/include/mysql/client_plugin.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/mysql/plugin_auth_common.h \
   /usr/include/mysql/mysql_version.h \
   /usr/include/mysql/mysql_time.h \
@@ -2516,6 +2524,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h:
 
+/usr/include/hiredis/sds.h:
+
 ../src/main.cpp:
 
 ../src/core/ThreadPool.cpp:
@@ -2572,6 +2582,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
 
+../include/chat/SmsService.h:
+
 ../src/db/DBconnection.cpp:
 
 /usr/include/nlohmann/detail/macro_unscope.hpp:
@@ -2607,6 +2619,10 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/nlohmann/detail/input/json_sax.hpp:
 
 /usr/include/nlohmann/detail/meta/call_std/end.hpp:
+
+/usr/include/x86_64-linux-gnu/sys/time.h:
+
+/usr/include/hiredis/read.h:
 
 /usr/include/nlohmann/detail/meta/call_std/begin.hpp:
 
@@ -2734,6 +2750,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/11/fstream:
 
+/usr/include/hiredis/hiredis.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
@@ -2801,6 +2819,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /usr/include/libintl.h:
+
+../include/db/RedisConnection.h:
 
 /usr/include/c++/11/pstl/glue_numeric_defs.h:
 
@@ -3170,6 +3190,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/signum-arch.h:
 
+../include/db/RedisPool.h:
+
 /usr/include/x86_64-linux-gnu/bits/errno.h:
 
 /usr/include/sched.h:
@@ -3389,5 +3411,7 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/bits/locale_facets_nonio.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
+
+/usr/include/hiredis/alloc.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:

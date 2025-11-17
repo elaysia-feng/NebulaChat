@@ -2452,6 +2452,15 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o
  /usr/include/nlohmann/detail/macro_unscope.hpp
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
  /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h
+ /home/elias/vscode_code_all/NebulaChat/include/chat/SmsService.h
+ /home/elias/vscode_code_all/NebulaChat/include/db/RedisPool.h
+ /home/elias/vscode_code_all/NebulaChat/include/db/RedisConnection.h
+ /usr/include/hiredis/hiredis.h
+ /usr/include/hiredis/read.h
+ /usr/include/x86_64-linux-gnu/sys/time.h
+ /usr/include/hiredis/sds.h
+ /usr/include/hiredis/alloc.h
+ /usr/include/c++/11/stdlib.h
  /home/elias/vscode_code_all/NebulaChat/include/db/DBpool.h
  /home/elias/vscode_code_all/NebulaChat/include/db/DBconnection.h
  /usr/include/mysql/mysql.h
@@ -2463,7 +2472,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o
  /usr/include/mysql/my_compress.h
  /usr/include/mysql/udf_registration_types.h
  /usr/include/mysql/client_plugin.h
- /usr/include/c++/11/stdlib.h
  /usr/include/mysql/plugin_auth_common.h
  /usr/include/mysql/mysql_version.h
  /usr/include/mysql/mysql_time.h

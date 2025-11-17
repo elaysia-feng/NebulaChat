@@ -2,6 +2,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "chat/AuthService.h"
+#include "SmsService.h"
 
 struct Connection;  // 只需要前向声明
 
@@ -12,4 +13,5 @@ public:
 
 private:
     AuthService auth_;
+    SmsService  sms_;   // 新增：短信服务
 };

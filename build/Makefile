@@ -177,6 +177,30 @@ src/chat/MessageHandler.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.s
 .PHONY : src/chat/MessageHandler.cpp.s
 
+src/chat/SmsService.o: src/chat/SmsService.cpp.o
+.PHONY : src/chat/SmsService.o
+
+# target to build an object file
+src/chat/SmsService.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/SmsService.cpp.o
+.PHONY : src/chat/SmsService.cpp.o
+
+src/chat/SmsService.i: src/chat/SmsService.cpp.i
+.PHONY : src/chat/SmsService.i
+
+# target to preprocess a source file
+src/chat/SmsService.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/SmsService.cpp.i
+.PHONY : src/chat/SmsService.cpp.i
+
+src/chat/SmsService.s: src/chat/SmsService.cpp.s
+.PHONY : src/chat/SmsService.s
+
+# target to generate assembly for a file
+src/chat/SmsService.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/SmsService.cpp.s
+.PHONY : src/chat/SmsService.cpp.s
+
 src/core/Reactor.o: src/core/Reactor.cpp.o
 .PHONY : src/core/Reactor.o
 
@@ -297,6 +321,54 @@ src/db/DBpool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/DBpool.cpp.s
 .PHONY : src/db/DBpool.cpp.s
 
+src/db/RedisConnection.o: src/db/RedisConnection.cpp.o
+.PHONY : src/db/RedisConnection.o
+
+# target to build an object file
+src/db/RedisConnection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisConnection.cpp.o
+.PHONY : src/db/RedisConnection.cpp.o
+
+src/db/RedisConnection.i: src/db/RedisConnection.cpp.i
+.PHONY : src/db/RedisConnection.i
+
+# target to preprocess a source file
+src/db/RedisConnection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisConnection.cpp.i
+.PHONY : src/db/RedisConnection.cpp.i
+
+src/db/RedisConnection.s: src/db/RedisConnection.cpp.s
+.PHONY : src/db/RedisConnection.s
+
+# target to generate assembly for a file
+src/db/RedisConnection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisConnection.cpp.s
+.PHONY : src/db/RedisConnection.cpp.s
+
+src/db/RedisPool.o: src/db/RedisPool.cpp.o
+.PHONY : src/db/RedisPool.o
+
+# target to build an object file
+src/db/RedisPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.o
+.PHONY : src/db/RedisPool.cpp.o
+
+src/db/RedisPool.i: src/db/RedisPool.cpp.i
+.PHONY : src/db/RedisPool.i
+
+# target to preprocess a source file
+src/db/RedisPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.i
+.PHONY : src/db/RedisPool.cpp.i
+
+src/db/RedisPool.s: src/db/RedisPool.cpp.s
+.PHONY : src/db/RedisPool.s
+
+# target to generate assembly for a file
+src/db/RedisPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.s
+.PHONY : src/db/RedisPool.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -336,6 +408,9 @@ help:
 	@echo "... src/chat/MessageHandler.o"
 	@echo "... src/chat/MessageHandler.i"
 	@echo "... src/chat/MessageHandler.s"
+	@echo "... src/chat/SmsService.o"
+	@echo "... src/chat/SmsService.i"
+	@echo "... src/chat/SmsService.s"
 	@echo "... src/core/Reactor.o"
 	@echo "... src/core/Reactor.i"
 	@echo "... src/core/Reactor.s"
@@ -351,6 +426,12 @@ help:
 	@echo "... src/db/DBpool.o"
 	@echo "... src/db/DBpool.i"
 	@echo "... src/db/DBpool.s"
+	@echo "... src/db/RedisConnection.o"
+	@echo "... src/db/RedisConnection.i"
+	@echo "... src/db/RedisConnection.s"
+	@echo "... src/db/RedisPool.o"
+	@echo "... src/db/RedisPool.i"
+	@echo "... src/db/RedisPool.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

@@ -129,8 +129,8 @@ nc 127.0.0.1 8888
 
 ```json
 {"cmd":"login","user":"Elias","pass":"1234"}
-```
 
+```
 或者：
 
 ```json

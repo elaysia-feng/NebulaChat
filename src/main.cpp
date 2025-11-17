@@ -1,4 +1,5 @@
 #include "core/Server.h"
+#include "db/RedisPool.h"
 #include "core/ThreadPool.h"
 #include "db/DBpool.h"
 #include <iostream>
@@ -27,8 +28,20 @@ int main() {
     if (!ok) {
         std::cerr << "[main] DBPool init FAILED!" << std::endl;
         return -1;
-    }
+    } 
     std::cout << "[main] DBPool init OK\n";
+
+    
+    bool redisOk = RedisPool::Instance().init(
+        "127.0.0.1",
+        6379,
+        10
+    );
+    if (!redisOk) {
+        std::cerr << "[main] RedisPool init FAILED!" << std::endl;
+        return -1;
+    } 
+    std::cout << "[main] RedisPool init OK\n";
 
     // ① 创建 Reactor（事件循环）
     reactor rect(1024, true);

@@ -10,8 +10,12 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
         json rep = json::parse(line);
         std::string cmd = rep.value("cmd", "");
 
-        // 未登录只能执行 login 和 register
-        if (!c.authed && cmd != "login" && cmd != "register") {
+        // 未登录只能执行 login | register | send_sms | verify_sms
+        if (!c.authed &&
+            cmd != "login" &&
+            cmd != "register" &&
+            cmd != "send_sms" &&
+            cmd != "verify_sms") {
             resp["ok"]  = false;
             resp["err"] = "please login first";
             return resp.dump() + "\n";
@@ -38,6 +42,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
 
         // ---------------- register ----------------
         else if (cmd == "register") {
+            
             std::string user = rep.value("user", "");
             std::string pass = rep.value("pass", "");
 
@@ -47,10 +52,32 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 resp["msg"]    = "register success";
                 resp["userId"] = uid;
                 resp["user"]   = user;
-            } else {
+            }
+            else {
                 resp["ok"]  = false;
                 resp["msg"] = "register failed";
             }
+        } 
+             // ---------------- send_sms ----------------
+        else if (cmd == "send_sms") {
+            std::string phone = rep.value("phone", "");
+            SmsResult r       = sms_.sendCode(phone);
+            resp["ok"]        = r.ok;
+            resp["msg"]       = r.msg;
+        }
+
+        // ---------------- verify_sms ----------------
+        else if (cmd == "verify_sms") {
+            std::string phone = rep.value("phone", "");
+            std::string code  = rep.value("code", "");
+
+            SmsResult r = sms_.verifyCode(phone, code);
+            resp["ok"]  = r.ok;
+            resp["msg"] = r.msg;
+
+            // 这里以后可以选择：
+            // 验证成功后自动帮用户完成登录/注册逻辑
+            // 例如标记一个手机号已验证，或去调用 AuthService
         }
 
         // ---------------- echo ----------------

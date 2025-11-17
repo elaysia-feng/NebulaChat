@@ -6,43 +6,57 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-# 线程库
-find_package(Threads REQUIRED)
-
-# MySQL 头文件路径
+# include
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     /usr/include/mysql
+    /usr/include/hiredis        # <--- 新增 hiredis 头文件
 )
 
-# 查找 MySQL 客户端库：libmysqlclient.so
+# Thread
+find_package(Threads REQUIRED)
+
+# MySQL
 find_library(MYSQLCLIENT_LIB
     NAMES mysqlclient
     PATHS /usr/lib /usr/lib/x86_64-linux-gnu /usr/local/lib
 )
-
 if(NOT MYSQLCLIENT_LIB)
-    message(FATAL_ERROR "Could not find libmysqlclient (install libmysqlclient-dev ?)")
+    message(FATAL_ERROR "libmysqlclient not found (install libmysqlclient-dev)")
 endif()
+message(STATUS "Found MySQL: ${MYSQLCLIENT_LIB}")
 
-message(STATUS "Found MySQL client library: ${MYSQLCLIENT_LIB}")
+# hiredis（手动查找）
+find_library(HIREDIS_LIB hiredis
+    PATHS /usr/lib /usr/lib/x86_64-linux-gnu /usr/local/lib
+)
+if(NOT HIREDIS_LIB)
+    message(FATAL_ERROR "hiredis not found (sudo apt install libhiredis-dev)")
+endif()
+message(STATUS "Found hiredis: ${HIREDIS_LIB}")
 
-# 源文件
+# sources
 add_executable(NebulaChat
     src/main.cpp
+
     src/core/ThreadPool.cpp
     src/core/Reactor.cpp
     src/core/Server.cpp
-    src/chat/MessageHandler.cpp
+
     src/chat/AuthService.cpp
+    src/chat/MessageHandler.cpp
+    src/chat/SmsService.cpp
+
     src/db/DBconnection.cpp
     src/db/DBpool.cpp
+    src/db/RedisConnection.cpp
+    src/db/RedisPool.cpp
 )
-target_include_directories(NebulaChat PRIVATE include)
 
-# 链接 pthread + mysqlclient
+# link
 target_link_libraries(NebulaChat
     PRIVATE
         Threads::Threads
-        ${MYSQLCLIENT_LIB}
+        ${HIREDIS_LIB}        # <--- 链接 hiredis
+        ${MYSQLCLIENT_LIB}    # <--- 链接 mysqlclient
 )
