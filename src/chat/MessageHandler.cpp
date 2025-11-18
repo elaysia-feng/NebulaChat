@@ -21,70 +21,132 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
             return resp.dump() + "\n";
         }
 
-        // ---------------- login ----------------
-        if (cmd == "login") {
-            std::string user = rep.value("user", "");
-            std::string pass = rep.value("pass", "");
-            std::string phone= rep.value("phone", "");
-            std::string code = rep.value("code", "");
+       // ---------------- login ----------------
+if (cmd == "login") {
+    std::string mode = rep.value("mode", "password");
 
-            // A. 如果带了 phone 但没带 code：先给这个手机号发验证码
-            //    相当于“我要用短信验证码方式登录，请先给我发一条”
-            if(!phone.empty() && code.empty()) {
-                SmsResult r = sms_.sendCode(phone);
-                resp["ok"]  = r.ok;
-                resp["msg"] = r.msg;
-                return resp.dump() + "\n";
-            } 
-            
+    // 1) 用户名 + 密码登录
+    if (mode == "password") {
+        std::string user = rep.value("user", "");
+        std::string pass = rep.value("pass", "");
 
-            // B. 如果 phone + code 都有：先校验验证码
-            if(!phone.empty() && !code.empty()) {
-                SmsResult r = sms_.verifyCode(phone, code);
-                if (!r.ok) {
-                resp["ok"]  = false;
-                resp["msg"] = r.msg;   // 验证码错/过期
-                return resp.dump() + "\n";
-                }
-            
-                resp["ok"]  = true;
-                resp["msg"] = "login success";   // 验证码错/过期
-                return resp.dump() + "\n";
-            }
+        int uid = 0;
+        if (auth_.login(user, pass, uid)) {
+            c.authed = true;
+            c.userId = uid;
+            c.name   = user;
 
-            // C. 走原来的用户名+密码登录逻辑
-            int uid = 0;
-            if (auth_.login(user, pass, uid)) {
-                c.authed = true;
-                c.userId = uid;
-                c.name   = user;
+            resp["ok"]  = true;
+            resp["msg"] = "login success";
+        } else {
+            resp["ok"]  = false;
+            resp["msg"] = "wrong username or password";
+        }
+    }
 
-                resp["ok"]  = true;
-                resp["msg"] = "login success";
-            } else {
-                resp["ok"]  = false;
-                resp["msg"] = "wrong username or password";
-            }
+    // 2) 手机 + 短信验证码登录
+    else if (mode == "sms") {
+        int         step  = rep.value("step", 1);
+        std::string phone = rep.value("phone", "");
+
+        // step=1: 发送验证码
+        if (step == 1) {
+            SmsResult r = sms_.sendCode(phone);
+            resp["ok"]  = r.ok;
+            resp["msg"] = r.msg;
+            return resp.dump() + "\n";
         }
 
-        // ---------------- register ----------------
-        else if (cmd == "register") {
-            
-            std::string user = rep.value("user", "");
-            std::string pass = rep.value("pass", "");
+        // step=2: 校验验证码并登录
+        if (step == 2) {
+            std::string code = rep.value("code", "");
 
-            int uid = 0;
-            if (auth_.Register(user, pass, uid)) {
-                resp["ok"]     = true;
-                resp["msg"]    = "register success";
-                resp["userId"] = uid;
-                resp["user"]   = user;
-            }
-            else {
+            // A. 校验验证码（Redis）
+            SmsResult r = sms_.verifyCode(phone, code);
+            if (!r.ok) {
                 resp["ok"]  = false;
-                resp["msg"] = "register failed";
+                resp["msg"] = r.msg;
+                return resp.dump() + "\n";
             }
-        } 
+
+            // B. MySQL 里按 phone 找用户
+            int         uid = 0;
+            std::string username;
+            if (!auth_.loginByPhone(phone, uid, username)) {
+                resp["ok"]  = false;
+                resp["msg"] = "phone not registered";
+                return resp.dump() + "\n";
+            }
+
+            // C. 登录成功
+            c.authed = true;
+            c.userId = uid;
+            c.name   = username;
+
+            resp["ok"]  = true;
+            resp["msg"] = "login success (sms)";
+            return resp.dump() + "\n";
+        }
+
+        // 其它 step 非法
+        resp["ok"]  = false;
+        resp["msg"] = "invalid step for sms login";
+    }
+}
+
+        // ---------------- register ----------------
+else if (cmd == "register") {
+    int         step  = rep.value("step", 1);
+    std::string phone = rep.value("phone", "");
+
+    // step=1: 发送验证码
+    if (step == 1) {
+        SmsResult r = sms_.sendCode(phone);
+        resp["ok"]  = r.ok;
+        resp["msg"] = r.msg;
+        return resp.dump() + "\n";
+    }
+
+    // step=2: 验证码 + 用户名 + 两次密码
+    if (step == 2) {
+        std::string code  = rep.value("code", "");
+        std::string user  = rep.value("user", "");
+        std::string pass  = rep.value("pass", "");
+        std::string pass2 = rep.value("pass2", "");
+
+        // 1. 两次密码必须一致
+        if (pass != pass2) {
+            resp["ok"]  = false;
+            resp["msg"] = "two passwords not match";
+            return resp.dump() + "\n";
+        }
+
+        // 2. 校验验证码
+        SmsResult r = sms_.verifyCode(phone, code);
+        if (!r.ok) {
+            resp["ok"]  = false;
+            resp["msg"] = r.msg;
+            return resp.dump() + "\n";
+        }
+
+        // 3. 调 AuthService 注册
+        int uid = 0;
+        if (auth_.Register(phone, user, pass, uid)) {
+            resp["ok"]     = true;
+            resp["msg"]    = "register success";
+            resp["userId"] = uid;
+            resp["user"]   = user;
+        } else {
+            resp["ok"]  = false;
+            resp["msg"] = "register failed";
+        }
+        return resp.dump() + "\n";
+    }
+
+    resp["ok"]  = false;
+    resp["msg"] = "invalid step for register";
+}
+
         //      // ---------------- send_sms ----------------
         // else if (cmd == "send_sms") {
         //     std::string phone = rep.value("phone", "");

@@ -63,12 +63,12 @@ SmsResult SmsService::sendCode(const std::string& phone)
         return r;
     }
 
-    // 这里模拟“发送短信”：真实环境下可以换成短信网关 HTTP 调用
-    LOG_INFO("[SmsService::sendCode] send sms code phone=" << phone
-             << " code=" << code);
+    // // 这里模拟“发送短信”：真实环境下可以换成短信网关 HTTP 调用
+    // LOG_INFO("[SmsService::sendCode] send sms code phone=" << phone
+    //          << " code=" << code);
 
     r.ok  = true;
-    r.msg = "code sent";
+    r.msg = code;
     return r;
 }
 

@@ -15,7 +15,7 @@ bool AuthService::login(const std::string& user,
     }
 
     // 简单示例：假设 user 表结构：
-    // users(id INT PK, username VARCHAR, password VARCHAR)
+    // users(id INT PK, username VARCHAR, password VARCHAR, phone VARCHAR)
     std::string sql =
         "SELECT id FROM users "
         "WHERE username = '" + user + "' "
@@ -48,7 +48,8 @@ bool AuthService::login(const std::string& user,
 }    
 
 
-bool AuthService::Register(const std::string& user,
+bool AuthService::Register(const std::string& phone,
+                           const std::string& user,
                            const std::string& pass,
                            int&               userId)
 {
@@ -58,32 +59,44 @@ bool AuthService::Register(const std::string& user,
         return false;
     }
 
-    // 1. 检查是否存在同名用户
-    // SQL 修复：原来缺空格
-    std::string check_sql =
+    // 1. 检查手机号是否已注册
+    std::string check_phone_sql =
+        "SELECT id FROM users "
+        "WHERE phone = '" + phone + "' "
+        "LIMIT 1";
+
+    LOG_DEBUG("[AuthService::Register] check phone SQL = " << check_phone_sql);
+
+    if (MYSQL_RES* res = conn->query(check_phone_sql)) {
+        if (MYSQL_ROW row = mysql_fetch_row(res)) {
+            LOG_WARN("[AuthService::Register] phone already exists: " << phone);
+            mysql_free_result(res);
+            return false;
+        }
+        mysql_free_result(res);
+    }
+
+    // 2. 检查用户名是否已存在
+    std::string check_user_sql =
         "SELECT id FROM users "
         "WHERE username = '" + user + "' "
         "LIMIT 1";
 
-    LOG_DEBUG("[AuthService::Register] check SQL = " << check_sql);
+    LOG_DEBUG("[AuthService::Register] check user SQL = " << check_user_sql);
 
-    MYSQL_RES* check_res = conn->query(check_sql);
-    if (check_res) {
-        MYSQL_ROW row = mysql_fetch_row(check_res);
-        if (row) {
-            // 用户名已存在
-            LOG_WARN("[AuthService::Register] username already exists: "
-                     << user);
-            mysql_free_result(check_res);      // 必须释放
+    if (MYSQL_RES* res = conn->query(check_user_sql)) {
+        if (MYSQL_ROW row = mysql_fetch_row(res)) {
+            LOG_WARN("[AuthService::Register] username already exists: " << user);
+            mysql_free_result(res);
             return false;
         }
-        mysql_free_result(check_res);
+        mysql_free_result(res);
     }
 
-    // 2. 插入新用户
+    // 3. 插入新用户（phone + username + password）
     std::string insert_sql =
-        "INSERT INTO users(username, password) "
-        "VALUES('" + user + "', '" + pass + "')";
+        "INSERT INTO users(phone, username, password) "
+        "VALUES('" + phone + "', '" + user + "', '" + pass + "')";
 
     LOG_DEBUG("[AuthService::Register] insert SQL = " << insert_sql);
 
@@ -92,10 +105,10 @@ bool AuthService::Register(const std::string& user,
         return false;
     }
 
-    // 3. 再查出 id
+    // 4. 查询新用户 id
     std::string select_sql =
         "SELECT id FROM users "
-        "WHERE username = '" + user + "' "
+        "WHERE phone = '" + phone + "' "
         "LIMIT 1";
 
     LOG_DEBUG("[AuthService::Register] select SQL = " << select_sql);
@@ -107,17 +120,61 @@ bool AuthService::Register(const std::string& user,
     }
 
     MYSQL_ROW row = mysql_fetch_row(id_res);
-
     if (!row) {
-        LOG_ERROR("[AuthService::Register] ERROR: cannot fetch id after insert");
+        LOG_ERROR("[AuthService::Register] cannot fetch id after insert");
         mysql_free_result(id_res);
         return false;
     }
 
     userId = std::stoi(row[0]);
-    LOG_INFO("[AuthService::Register] register success, user = " << user
-             << ", id = " << userId);
+    LOG_INFO("[AuthService::Register] register success, user=" << user
+             << ", phone=" << phone << ", id=" << userId);
 
     mysql_free_result(id_res);
+    return true;
+}
+
+bool AuthService::loginByPhone(const std::string& phone,
+                               int&               userId,
+                               std::string&       usernameOut)
+{
+    auto conn = DBPool::Instance().getConnection();
+    if (!conn) {
+        LOG_ERROR("[AuthService::loginByPhone] ERROR: no db connection");
+        return false;
+    }
+
+    std::string sql =
+        "SELECT id, username FROM users "
+        "WHERE phone = '" + phone + "' "
+        "LIMIT 1";
+
+    LOG_DEBUG("[AuthService::loginByPhone] SQL = " << sql);
+
+    MYSQL_RES* res = conn->query(sql);
+    if (!res) {
+        LOG_ERROR("[AuthService::loginByPhone] query failed");
+        return false;
+    }
+
+    MYSQL_ROW row = mysql_fetch_row(res);
+    if (!row) {
+        LOG_WARN("[AuthService::loginByPhone] no such phone: " << phone);
+        mysql_free_result(res);
+        return false;
+    }
+
+    userId = std::stoi(row[0]);
+    if (row[1]) {
+        usernameOut = row[1];
+    } else {
+        usernameOut.clear();
+    }
+
+    LOG_INFO("[AuthService::loginByPhone] phone=" << phone
+             << " login success, id=" << userId
+             << ", username=" << usernameOut);
+
+    mysql_free_result(res);
     return true;
 }

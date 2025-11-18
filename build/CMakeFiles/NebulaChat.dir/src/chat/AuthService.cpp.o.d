@@ -130,6 +130,7 @@ CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/11/bits/charconv.h \
  /usr/include/c++/11/bits/basic_string.tcc \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/SmsService.h \
  /home/elias/vscode_code_all/NebulaChat/include/db/DBpool.h \
  /home/elias/vscode_code_all/NebulaChat/include/db/DBconnection.h \
  /usr/include/mysql/mysql.h \
