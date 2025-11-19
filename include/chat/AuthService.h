@@ -23,4 +23,13 @@ public:
                const std::string& user,
                const std::string& pass,
                int&               userId);
+    //更新数据改名字
+    bool updateUsername(int userId,
+                    const std::string& newName,
+                    std::string&       oldNameOut,
+                    std::string&       phoneOut);
+
+    //改密码
+    bool resetPasswordByPhone(const std::string& phone,
+                          const std::string& newPass);
 };

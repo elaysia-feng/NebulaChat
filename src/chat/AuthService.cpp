@@ -339,3 +339,143 @@ bool AuthService::loginByPhone(const std::string& phone,
 
     return true;
 }
+
+bool AuthService::updateUsername(int userId,
+                                 const std::string& newName,
+                                 std::string&       oldNameOut,
+                                 std::string&       phoneOut)
+{
+    if (newName.empty()) {
+        LOG_WARN("[AuthService::updateUsername] newName empty, uid=" << userId);
+        return false;
+    }
+
+    auto conn = DBPool::Instance().getConnection();
+    if (!conn) {
+        LOG_ERROR("[AuthService::updateUsername] no db connection");
+        return false;
+    }
+
+    // 1. 先查出当前用户名 + 手机号（为了删缓存）
+    std::string query_sql =
+        "SELECT username, phone FROM users "
+        "WHERE id = " + std::to_string(userId) + " LIMIT 1";
+    
+    MYSQL_RES* res = conn->query(query_sql);
+    if (!res) {
+        LOG_ERROR("[AuthService::updateUsername] query current user failed");
+        return false;
+    }
+
+    MYSQL_ROW row = mysql_fetch_row(res);
+    if (!row) {
+        LOG_WARN("[AuthService::updateUsername] user not exist, id=" << userId);
+        mysql_free_result(res);
+        return false;
+    }
+
+    oldNameOut = row[1] ? row[1] : "";
+    phoneOut   = row[2] ? row[2] : "";
+    mysql_free_result(res);
+
+    // 2. 检查新用户名是否已被别人占用
+    std::string check_sql =
+        "SELECT id FROM users "
+        "WHERE username = '" + newName + "' "
+        "AND id <> " + std::to_string(userId) +
+        " LIMIT 1";
+
+    if (MYSQL_RES* ck = conn->query(check_sql)) {
+        if (MYSQL_ROW r = mysql_fetch_row(ck)) {
+            LOG_WARN("[AuthService::updateUsername] newName already used: " << newName);
+            mysql_free_result(ck);
+            return false;
+        }
+        mysql_free_result(ck);
+    }
+
+     // 3. 更新数据库中的用户名
+    std::string update_sql =
+        "UPDATE users SET username = '" + newName + "' "
+        "WHERE id = " + std::to_string(userId);
+
+    if (!conn->update(update_sql)) {
+        LOG_ERROR("[AuthService::updateUsername] update sql failed");
+        return false;
+    }
+
+    LOG_INFO("[AuthService::updateUsername] uid=" << userId
+             << " oldName=" << oldNameOut
+             << " newName=" << newName);
+
+    auto redisConn = RedisPool::Instance().getConnection();
+    if (redisConn) {
+        if (!oldNameOut.empty()){
+            redisConn->del("user:name" + oldNameOut);
+        }
+        if(!phoneOut.empty()) {
+            redisConn->del("user:phone" + phoneOut);
+        }
+        redisConn->del("user:id:" + std::to_string(userId));
+    }    
+    return true;
+}
+
+
+bool AuthService::resetPasswordByPhone(const std::string& phone,
+                                       const std::string& newPass)
+{
+    auto conn = DBPool::Instance().getConnection();
+    if (!conn) {
+        LOG_ERROR("[AuthService::resetPasswordByPhone] no db connection");
+        return false;
+    }
+
+    // 1. 查出这个手机号对应的用户 id + username
+    std::string query_sql =
+        "SELECT id, username FROM users "
+        "WHERE phone = '" + phone + "' "
+        "LIMIT 1";
+
+    MYSQL_RES* res = conn->query(query_sql);
+    if (!res) {
+        LOG_ERROR("[AuthService::resetPasswordByPhone] query failed");
+        return false;
+    }
+
+    MYSQL_ROW row = mysql_fetch_row(res);
+    if (!row) {
+        LOG_WARN("[AuthService::resetPasswordByPhone] phone not found: " << phone);
+        mysql_free_result(res);
+        return false;
+    }
+
+    int         userId   = std::stoi(row[0]);
+    std::string username = row[1] ? row[1] : "";
+    mysql_free_result(res);
+
+    // 2. 更新密码（这里先用明文）
+    std::string update_sql =
+        "UPDATE users SET password = '" + newPass + "' "
+        "WHERE id = " + std::to_string(userId);
+
+    if (!conn->update(update_sql)) {
+        LOG_ERROR("[AuthService::resetPasswordByPhone] update failed");
+        return false;
+    }
+
+    LOG_INFO("[AuthService::resetPasswordByPhone] reset password, uid=" << userId
+             << " phone=" << phone);
+
+    // 3. 删除与这个用户相关的缓存
+    auto redisConn = RedisPool::Instance().getConnection();
+    if (redisConn) {
+        if (!username.empty()) {
+            redisConn->del("user:name:" + username);
+        }
+        redisConn->del("user:phone:" + phone);
+        redisConn->del("user:id:" + std::to_string(userId));
+    }
+
+    return true;
+}
