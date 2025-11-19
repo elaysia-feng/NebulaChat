@@ -1,6 +1,7 @@
 #include "chat/SmsService.h"
 #include "db/RedisPool.h"
 #include "core/Logger.h"
+#include "utils/Random.h"
 #include <cctype>
 #include <cstdlib>
 #include <ctime>
@@ -28,12 +29,7 @@ std::string SmsService::genCode()
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
     });
 
-    int min = 1;
-    for (int i = 0; i < SMS_CODE_LEN - 1; ++i) {
-        min *= 10;
-    }
-    int max  = min * 10 - 1;
-    int code = std::rand() % (max - min + 1) + min;
+    int code = utils::RandInt(100000, 999999);
     return std::to_string(code);
 }
 

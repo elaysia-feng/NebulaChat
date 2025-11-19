@@ -2,6 +2,7 @@
 #include "db/DBpool.h"
 #include "db/RedisPool.h"
 #include "core/Logger.h"
+#include "utils/Random.h"
 #include <string>
 #include <nlohmann/json.hpp>
 
@@ -85,7 +86,10 @@ bool AuthService::login(const std::string& user,
 
         // 3) 数据库也没有 → 写一个短期的“空缓存”防止穿透
         if(redisConn) {
-            redisConn->setEX(key, "null", 120);
+            int baseTTL   = 60;
+            int randDelta = utils::RandInt(0, 600); // 0~60 秒
+            int ttl       = baseTTL + randDelta;
+            redisConn->setEX(key, "null", ttl);
             LOG_INFO("[AuthService::login] set null cache for user=" << user);
         }
         return false;
@@ -112,7 +116,10 @@ bool AuthService::login(const std::string& user,
         j["username"] = user;
         j["password"] = pass;   // ⚠ 示例，生产环境不要缓存明文密码,还没学到这里，以后处理
         
-        redisConn->setEX(key, j.dump(), 3600); // 缓存 1 小时
+        int baseTTL   = 3600;
+        int randDelta = utils::RandInt(0, 600); // 0~600 秒
+        int ttl       = baseTTL + randDelta;
+        redisConn->setEX(key, j.dump(), ttl); // 缓存 1 小时
         LOG_INFO("[AuthService::login] set cache for user=" << user);
     } catch (const std::exception& e) {
             LOG_ERROR("[AuthService::login] build cache json fail, user=" << user
@@ -221,8 +228,11 @@ bool AuthService::Register(const std::string& phone,
 
             std::string v = j.dump();
 
-            RedisConn->setEX("user:name:" + user, v, 3600);
-            RedisConn->setEX("user:pass:" + pass, v, 3600);
+            int baseTTL   = 3600;
+            int randDelta = utils::RandInt(0, 600); // 0~600 秒
+            int ttl       = baseTTL + randDelta;
+            RedisConn->setEX("user:name:" + user, v, ttl);
+            RedisConn->setEX("user:pass:" + pass, v, ttl);
 
             LOG_INFO("[AuthService::Register] warm cache for user=" << user
                      << " phone=" << phone);
@@ -302,7 +312,10 @@ bool AuthService::loginByPhone(const std::string& phone,
 
         // 写一个短期空缓存，防止穿透
         if (redisConn) {
-            redisConn->setEX(key, "null", 60);
+            int baseTTL   = 60;
+            int randDelta = utils::RandInt(0, 60); // 0~60 秒
+            int ttl       = baseTTL + randDelta;
+            redisConn->setEX(key, "null", ttl);
             LOG_INFO("[AuthService::loginByPhone] set null cache for phone=" << phone);
         }
         return false;
@@ -329,7 +342,10 @@ bool AuthService::loginByPhone(const std::string& phone,
             j["username"] = usernameOut;
             j["phone"]    = phone;
 
-            redisConn->setEX(key, j.dump(), 3600);
+            int baseTTL   = 3600;
+            int randDelta = utils::RandInt(0, 600); // 0~600 秒
+            int ttl       = baseTTL + randDelta;
+            redisConn->setEX(key, j.dump(), ttl);
             LOG_INFO("[AuthService::loginByPhone] set cache for phone=" << phone);
         } catch (const std::exception& e) {
             LOG_ERROR("[AuthService::loginByPhone] build cache json fail, phone=" << phone
