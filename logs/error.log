@@ -5,3 +5,4 @@
 2025-11-18 19:57:20 | ERROR | [RedisConnection::setEX] unexpected reply type=6
 2025-11-18 20:02:45 | ERROR | [RedisConnection::get] redisCommand returned nullptr
 2025-11-18 20:02:58 | ERROR | [RedisConnection::setEX] redisCommand returned nullptr
+2025-11-19 16:26:39 | ERROR | [ThreadPool::RunPool] exception in task: [json.exception.type_error.316] invalid UTF-8 byte at index 138: 0x27

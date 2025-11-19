@@ -450,3 +450,359 @@
 2025-11-18 20:07:27 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
 2025-11-18 20:07:37 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
 2025-11-18 20:07:37 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x62fe482e7780
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=0 raw=0x589f3b3a38c0
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=1 raw=0x589f3b4a87a0
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=2 raw=0x589f3b4c0190
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=3 raw=0x589f3b4d6e10
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=4 raw=0x589f3b4ed870
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=5 raw=0x589f3b5042f0
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=6 raw=0x589f3b51ad70
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=7 raw=0x589f3b5317f0
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=8 raw=0x589f3b547a00
+2025-11-19 16:19:21 | DEBUG | [DBPool::init] created connection index=9 raw=0x589f3b55d730
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=0 raw=0x589f3b573490
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=1 raw=0x589f3b5728b0
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=2 raw=0x589f3b573450
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=3 raw=0x589f3b572c30
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=4 raw=0x589f3b572d10
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=5 raw=0x589f3b56f670
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=6 raw=0x589f3b56fa10
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=7 raw=0x589f3b56fdb0
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=8 raw=0x589f3b570150
+2025-11-19 16:19:21 | DEBUG | [RedisPool::init] created redis connection index=9 raw=0x589f3b5704f0
+2025-11-19 16:19:21 | DEBUG | [ThreadPool::run] worker 0 started, id=135152854365760
+2025-11-19 16:19:21 | DEBUG | [ThreadPool::run] worker 1 started, id=135152845973056
+2025-11-19 16:19:21 | DEBUG | [ThreadPool::run] worker 2 started, id=135152837580352
+2025-11-19 16:19:21 | DEBUG | [ThreadPool::run] worker 3 started, id=135152829187648
+2025-11-19 16:19:21 | DEBUG | [Reactor::addFd] fd=29 events=0x1 useET=true
+2025-11-19 16:19:31 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:19:31 | DEBUG | [Reactor::loop] dispatch fd=29 events=0x1 user=0
+2025-11-19 16:19:31 | DEBUG | [Server::onEvent] EPOLLIN on listenFd_, accepting new connections
+2025-11-19 16:19:31 | DEBUG | [Reactor::addFd] fd=30 events=0x1 useET=true
+2025-11-19 16:19:31 | DEBUG | [Server::onAccept] no more clients to accept (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:20:29 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:20:29 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:20:29 | DEBUG | [Server::onConnRead] fd=30 read 50 bytes, inbuf size=50
+2025-11-19 16:20:29 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:20:29 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"register","step":1,"phone":"12345678901"}
+2025-11-19 16:20:29 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:20:29 | DEBUG | [ThreadPool::RunPool] worker 135152854365760 got one task
+2025-11-19 16:20:29 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"register","step":1,"phone":"12345678901"}
+2025-11-19 16:20:29 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b573490
+2025-11-19 16:20:29 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b573490
+2025-11-19 16:20:29 | DEBUG | [Server::postWrite] fd=30 append 27 bytes to outbuf
+2025-11-19 16:20:29 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:20:29 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:20:29 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:20:29 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:20:29 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:20:29 | DEBUG | [Server::onConnWrite] fd=30 wrote 27 bytes, left=0
+2025-11-19 16:20:29 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:20:29 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:20:29 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:20:29 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 read 24 bytes, inbuf size=24
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line: {
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "cmd":"register",
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152845973056 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content: {
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "cmd":"register",
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 176 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:21:28 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:21:28 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:21:28 | DEBUG | [Server::onConnWrite] fd=30 wrote 337 bytes, left=0
+2025-11-19 16:21:28 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:21:28 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:21:28 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 read 131 bytes, inbuf size=131
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "step":2,
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "phone":"12345678901",
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152854365760 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "step":2,
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152829187648 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "phone":"12345678901",
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:21:28 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:21:28 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "code":"944955", 
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "user":"Eliasccccc", 
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "pass":"feng", 
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152845973056 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "user":"Eliasccccc", 
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "code":"944955", 
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line:     "pass2":"feng" 
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152854365760 got one task
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152845973056 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "pass2":"feng" 
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content:     "pass":"feng", 
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Server::onConnRead] fd=30 got one line: }
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [ThreadPool::RunPool] worker 135152829187648 got one task
+2025-11-19 16:21:28 | DEBUG | [Server::worker] handling line for fd=30 content: }
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 170 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::postWrite] fd=30 append 161 bytes to outbuf
+2025-11-19 16:21:28 | DEBUG | [Server::onConnWrite] fd=30 wrote 1136 bytes, left=0
+2025-11-19 16:21:28 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:21:28 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:21:28 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:21:28 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 read 116 bytes, inbuf size=116
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"register","step":2,"phone":"12345678901","code":"944955","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:22:56 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:22:56 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:22:56 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"register","step":2,"phone":"12345678901","code":"944955","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:22:56 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b5728b0
+2025-11-19 16:22:56 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b5728b0
+2025-11-19 16:22:56 | DEBUG | [Server::postWrite] fd=30 append 47 bytes to outbuf
+2025-11-19 16:22:56 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:22:56 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:22:56 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:22:56 | DEBUG | [Server::onConnWrite] fd=30 wrote 47 bytes, left=0
+2025-11-19 16:22:56 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:22:56 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:22:56 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 read 1 bytes, inbuf size=1
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:22:56 | DEBUG | [Server::onConnRead] fd=30 got one line: 
+2025-11-19 16:22:56 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:22:56 | DEBUG | [ThreadPool::RunPool] worker 135152829187648 got one task
+2025-11-19 16:22:56 | DEBUG | [Server::worker] handling line for fd=30 content: 
+2025-11-19 16:22:56 | DEBUG | [Server::postWrite] fd=30 append 179 bytes to outbuf
+2025-11-19 16:22:56 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:22:56 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:22:56 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:22:56 | DEBUG | [Server::onConnWrite] fd=30 wrote 179 bytes, left=0
+2025-11-19 16:22:56 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:22:56 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:22:56 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:22:56 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read 1 bytes, inbuf size=1
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 got one line: 
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::RunPool] worker 135152854365760 got one task
+2025-11-19 16:22:57 | DEBUG | [Server::worker] handling line for fd=30 content: 
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 append 179 bytes to outbuf
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:22:57 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 wrote 179 bytes, left=0
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:22:57 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read 1 bytes, inbuf size=1
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 got one line: 
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::RunPool] worker 135152829187648 got one task
+2025-11-19 16:22:57 | DEBUG | [Server::worker] handling line for fd=30 content: 
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 append 179 bytes to outbuf
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:22:57 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 wrote 179 bytes, left=0
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:22:57 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read 1 bytes, inbuf size=1
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:22:57 | DEBUG | [Server::onConnRead] fd=30 got one line: 
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:22:57 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:22:57 | DEBUG | [Server::worker] handling line for fd=30 content: 
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 append 179 bytes to outbuf
+2025-11-19 16:22:57 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:22:57 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 wrote 179 bytes, left=0
+2025-11-19 16:22:57 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:22:57 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:22:57 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:22:57 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:23:13 | DEBUG | [Server::onConnRead] fd=30 read 116 bytes, inbuf size=116
+2025-11-19 16:23:13 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:23:13 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"register","step":2,"phone":"12345678901","code":"944955","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:23:13 | DEBUG | [ThreadPool::RunPool] worker 135152845973056 got one task
+2025-11-19 16:23:13 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"register","step":2,"phone":"12345678901","code":"944955","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:23:13 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:23:13 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b573450
+2025-11-19 16:23:13 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b573450
+2025-11-19 16:23:13 | DEBUG | [Server::postWrite] fd=30 append 47 bytes to outbuf
+2025-11-19 16:23:13 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:23:13 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:23:13 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:23:13 | DEBUG | [Server::onConnWrite] fd=30 wrote 47 bytes, left=0
+2025-11-19 16:23:13 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:23:13 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:23:13 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:23:13 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:23:44 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:23:44 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:23:44 | DEBUG | [Server::onConnRead] fd=30 read 50 bytes, inbuf size=50
+2025-11-19 16:23:44 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:23:44 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"register","step":1,"phone":"12345678901"}
+2025-11-19 16:23:44 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:23:44 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:23:44 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"register","step":1,"phone":"12345678901"}
+2025-11-19 16:23:44 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b572c30
+2025-11-19 16:23:44 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b572c30
+2025-11-19 16:23:44 | DEBUG | [Server::postWrite] fd=30 append 27 bytes to outbuf
+2025-11-19 16:23:44 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:23:44 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:23:44 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:23:44 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:23:44 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:23:44 | DEBUG | [Server::onConnWrite] fd=30 wrote 27 bytes, left=0
+2025-11-19 16:23:44 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:23:44 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:23:44 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:23:44 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:24:36 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:24:36 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:24:36 | DEBUG | [Server::onConnRead] fd=30 read 116 bytes, inbuf size=116
+2025-11-19 16:24:36 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:24:36 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"register","step":2,"phone":"12345678901","code":"928509","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:24:36 | DEBUG | [ThreadPool::RunPool] worker 135152829187648 got one task
+2025-11-19 16:24:36 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"register","step":2,"phone":"12345678901","code":"928509","user":"Eliasccccc","pass":"feng","pass2":"feng"} 
+2025-11-19 16:24:36 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b572d10
+2025-11-19 16:24:36 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:24:36 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b572d10
+2025-11-19 16:24:36 | DEBUG | [DBPool::getConnection] got connection from pool, raw=0x589f3b3a38c0
+2025-11-19 16:24:36 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b56f670
+2025-11-19 16:24:36 | DEBUG | [AuthService::Register] check phone SQL = SELECT id FROM users WHERE phone = '12345678901' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] SQL: SELECT id FROM users WHERE phone = '12345678901' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] query OK, has result set
+2025-11-19 16:24:36 | DEBUG | [AuthService::Register] check user SQL = SELECT id FROM users WHERE username = 'Eliasccccc' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] SQL: SELECT id FROM users WHERE username = 'Eliasccccc' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] query OK, has result set
+2025-11-19 16:24:36 | DEBUG | [AuthService::Register] insert SQL = INSERT INTO users(phone, username, password) VALUES('12345678901', 'Eliasccccc', 'feng')
+2025-11-19 16:24:36 | DEBUG | [DBconnection::update] SQL: INSERT INTO users(phone, username, password) VALUES('12345678901', 'Eliasccccc', 'feng')
+2025-11-19 16:24:36 | DEBUG | [AuthService::Register] select SQL = SELECT id FROM users WHERE phone = '12345678901' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] SQL: SELECT id FROM users WHERE phone = '12345678901' LIMIT 1
+2025-11-19 16:24:36 | DEBUG | [DBconnection::query] query OK, has result set
+2025-11-19 16:24:36 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b56f670
+2025-11-19 16:24:36 | DEBUG | [DBPool::getConnection] return connection to pool, raw=0x589f3b3a38c0
+2025-11-19 16:24:36 | DEBUG | [Server::postWrite] fd=30 append 68 bytes to outbuf
+2025-11-19 16:24:36 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:24:36 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:24:36 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:24:36 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:24:36 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:24:36 | DEBUG | [Server::onConnWrite] fd=30 wrote 68 bytes, left=0
+2025-11-19 16:24:36 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:24:36 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:24:36 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:24:36 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:25:34 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:25:34 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:25:34 | DEBUG | [Server::onConnRead] fd=30 read 68 bytes, inbuf size=68
+2025-11-19 16:25:34 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:25:34 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"login","mode":"password","user":"Eliasccccc","pass":"feng"}
+2025-11-19 16:25:34 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:25:34 | DEBUG | [ThreadPool::RunPool] worker 135152854365760 got one task
+2025-11-19 16:25:34 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"login","mode":"password","user":"Eliasccccc","pass":"feng"}
+2025-11-19 16:25:34 | DEBUG | [RedisPool::getConnection] got redis connection from pool, raw=0x589f3b56fa10
+2025-11-19 16:25:34 | DEBUG | [RedisPool::getConnection] return redis connection to pool, raw=0x589f3b56fa10
+2025-11-19 16:25:34 | DEBUG | [Server::postWrite] fd=30 append 34 bytes to outbuf
+2025-11-19 16:25:34 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:25:34 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:25:34 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:25:34 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:25:34 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:25:34 | DEBUG | [Server::onConnWrite] fd=30 wrote 34 bytes, left=0
+2025-11-19 16:25:34 | DEBUG | [Reactor::modFd] fd=30 events=0x1 useET=true
+2025-11-19 16:25:34 | DEBUG | [Server::onConnWrite] fd=30 write finished, disable EPOLLOUT
+2025-11-19 16:25:34 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:25:34 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:26:39 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:26:39 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:26:39 | DEBUG | [Server::onConnRead] fd=30 read 20 bytes, inbuf size=20
+2025-11-19 16:26:39 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:26:39 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd": “quit”}
+2025-11-19 16:26:39 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:26:39 | DEBUG | [ThreadPool::RunPool] worker 135152845973056 got one task
+2025-11-19 16:26:39 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd": “quit”}
+2025-11-19 16:27:12 | DEBUG | [Reactor::loop] epoll_wait returns n=1 events
+2025-11-19 16:27:12 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x1 user=0x589f3b572780
+2025-11-19 16:27:12 | DEBUG | [Server::onConnRead] fd=30 read 15 bytes, inbuf size=15
+2025-11-19 16:27:12 | DEBUG | [Server::onConnRead] fd=30 read all data (EAGAIN/EWOULDBLOCK)
+2025-11-19 16:27:12 | DEBUG | [Server::onConnRead] fd=30 got one line: {"cmd":"quit"}
+2025-11-19 16:27:12 | DEBUG | [ThreadPool::Enqueue] task enqueued
+2025-11-19 16:27:12 | DEBUG | [ThreadPool::RunPool] worker 135152837580352 got one task
+2025-11-19 16:27:12 | DEBUG | [Server::worker] handling line for fd=30 content: {"cmd":"quit"}
+2025-11-19 16:27:12 | DEBUG | [Server::postWrite] fd=30 append 38 bytes to outbuf
+2025-11-19 16:27:12 | DEBUG | [Server::postWrite] fd=30 enable EPOLLOUT and wakeup reactor
+2025-11-19 16:27:12 | DEBUG | [Reactor::modFd] fd=30 events=0x5 useET=true
+2025-11-19 16:27:12 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:27:12 | DEBUG | [Server::worker] fd=30 marked shortClose=true (will close after write)
+2025-11-19 16:27:12 | DEBUG | [Reactor::loop] epoll_wait returns n=2 events
+2025-11-19 16:27:12 | DEBUG | [Reactor::loop] dispatch fd=30 events=0x4 user=0x589f3b572780
+2025-11-19 16:27:12 | DEBUG | [Server::onConnWrite] fd=30 wrote 38 bytes, left=0
+2025-11-19 16:27:12 | DEBUG | [Server::onConnWrite] fd=-1297872174 write finished, disable EPOLLOUT
+2025-11-19 16:27:12 | DEBUG | [Reactor::loop] got wakeup event on evfd_=28 events=0x1
+2025-11-19 16:27:12 | DEBUG | [Reactor::DrainEvent] drained eventfd=28 counter=1
+2025-11-19 16:27:25 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-19 16:27:25 | DEBUG | [Reactor::loop] epoll_wait interrupted by signal, retry
+2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152854365760
+2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152845973056
+2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152837580352
+2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152829187648
+2025-11-19 16:27:25 | DEBUG | [Reactor::stop] already stopped (running_ was false)

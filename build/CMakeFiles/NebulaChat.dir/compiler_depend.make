@@ -153,6 +153,7 @@ CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: ../src/chat/AuthService.cp
   /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
   /usr/include/c++/11/bits/charconv.h \
   /usr/include/c++/11/bits/basic_string.tcc \
+  ../include/chat/SmsService.h \
   ../include/db/DBpool.h \
   ../include/db/DBconnection.h \
   /usr/include/mysql/mysql.h \
@@ -3353,12 +3354,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
 
-../src/db/DBconnection.cpp:
-
-../include/chat/SmsService.h:
-
-/usr/include/nlohmann/detail/macro_unscope.hpp:
-
 /usr/include/nlohmann/ordered_map.hpp:
 
 /usr/include/nlohmann/detail/conversions/to_chars.hpp:
@@ -3510,6 +3505,10 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/signum-generic.h:
 
 /usr/include/c++/11/bits/quoted_string.h:
+
+/usr/include/nlohmann/detail/exceptions.hpp:
+
+/usr/include/c++/11/bits/locale_conv.h:
 
 /usr/include/stdlib.h:
 
@@ -3987,6 +3986,12 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/mysql/mysql_com.h:
 
+../src/db/DBconnection.cpp:
+
+/usr/include/nlohmann/detail/macro_unscope.hpp:
+
+../include/chat/SmsService.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h:
 
 /usr/include/mysql/field_types.h:
@@ -3998,10 +4003,6 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/11/bits/allocator.h:
 
 /usr/include/mysql/client_plugin.h:
-
-/usr/include/nlohmann/detail/exceptions.hpp:
-
-/usr/include/c++/11/bits/locale_conv.h:
 
 /usr/include/c++/11/stdlib.h:
 

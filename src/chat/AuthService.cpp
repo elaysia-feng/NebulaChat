@@ -1,27 +1,75 @@
 #include "chat/AuthService.h"
 #include "db/DBpool.h"
+#include "db/RedisPool.h"
 #include "core/Logger.h"
 #include <string>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+
+// ===================== 用户名 + 密码登录（带缓存） =====================
+
 
 bool AuthService::login(const std::string& user,
                         const std::string& pass,
                         int&               userId)
 {
-    // 从连接池获取连接
+    std::string key = "user:name:" + user;
+
+    // 1) 先尝试走 Redis 缓存
+    auto redisConn = RedisPool::Instance().getConnection();
+    if(redisConn) {
+        std::string cached;
+
+        if(redisConn->get(key, cached)) {
+            // 命中缓存
+            
+            if (cached == "null") {
+                LOG_INFO("[AuthService::login] cache hit null for user=" << user);
+                return false;   // 之前查过，这个用户不存在
+            }
+
+            try {
+                json j = json::parse(cached);
+                std::string cachedPass = j.value("password", "");
+                int         cachedId   = j.value("id", 0);
+
+                if (cachedId > 0 && cachedPass == pass) {
+                    userId = cachedId;
+                    LOG_INFO("[AuthService::login] cache hit, user=" << user
+                             << " id=" << userId);
+                    return true;    // 完全命中缓存
+                }
+                else {
+                    // 缓存里有这个用户，但密码不匹配 → 继续走 DB 做一次严谨校验
+                    LOG_WARN("[AuthService::login] cache hit but password mismatch, user=" << user);
+                }
+
+            } catch (const std::exception& e) {
+                LOG_ERROR("[AuthService::login] parse cache fail, user=" << user
+                          << " err=" << e.what());
+                // 当作没命中，继续查数据库
+            }
+        } 
+
+    } else {
+        LOG_WARN("[AuthService::login] redis not available, fallback to DB only");
+    }
+
+    // 2) 缓存未命中 / 解析失败 / 密码不匹配 → 查 MySQL
     auto conn = DBPool::Instance().getConnection();
     if (!conn) {
         LOG_ERROR("[AuthService::login] ERROR: no db connection");
         return false;
     }
 
-    // 简单示例：假设 user 表结构：
-    // users(id INT PK, username VARCHAR, password VARCHAR, phone VARCHAR)
+     // 这里从 DB 里把 password 也一起查出来
     std::string sql =
-        "SELECT id FROM users "
+        "SELECT id, password FROM users "
         "WHERE username = '" + user + "' "
-        "AND password = '" + pass + "' "
         "LIMIT 1";
-
+    
     LOG_DEBUG("[AuthService::login] SQL = " << sql);
 
     MYSQL_RES* res = conn->query(sql);
@@ -30,24 +78,51 @@ bool AuthService::login(const std::string& user,
         return false;
     }
 
-    // 一次一行
     MYSQL_ROW row = mysql_fetch_row(res);
-    if (!row) {
-        LOG_WARN("[AuthService::login] no such user or wrong password, user=" << user);
+    if(!row) {
+        LOG_WARN("[AuthService::login] no such user, user=" << user);
         mysql_free_result(res);
+
+        // 3) 数据库也没有 → 写一个短期的“空缓存”防止穿透
+        if(redisConn) {
+            redisConn->setEX(key, "null", 120);
+            LOG_INFO("[AuthService::login] set null cache for user=" << user);
+        }
+        return false;
+    }
+    int         dbId   = std::stoi(row[0]);
+    std::string dbPass = row[2] ? row[2] : "";
+    
+    mysql_free_result(res);
+     if (dbPass != pass) {
+        LOG_WARN("[AuthService::login] wrong password for user=" << user);
+        // 不写缓存，让错误密码仍然走数据库（简单版本）
         return false;
     }
 
-    // row[0] = id
-    userId = std::stoi(row[0]);
+    userId = dbId;
     LOG_INFO("[AuthService::login] user " << user
              << " login success, id = " << userId);
 
-    mysql_free_result(res);
+    // 4) 登录成功 → 写回 Redis 缓存，下次就直接命中了
+    if(redisConn) {
+        try{
+        json j;
+        j["id"]       = userId;
+        j["username"] = user;
+        j["password"] = pass;   // ⚠ 示例，生产环境不要缓存明文密码,还没学到这里，以后处理
+        
+        redisConn->setEX(key, j.dump(), 3600); // 缓存 1 小时
+        LOG_INFO("[AuthService::login] set cache for user=" << user);
+    } catch (const std::exception& e) {
+            LOG_ERROR("[AuthService::login] build cache json fail, user=" << user
+                      << " err=" << e.what());
+        }
+    }
     return true;
 }    
 
-
+// ===================== 注册（成功后预热缓存） =====================
 bool AuthService::Register(const std::string& phone,
                            const std::string& user,
                            const std::string& pass,
@@ -58,6 +133,9 @@ bool AuthService::Register(const std::string& phone,
         LOG_ERROR("[AuthService::Register] ERROR: no db connection");
         return false;
     }
+    // 预先拿一个 redis 连接（可用的话，后面用来更新缓存）
+    auto RedisConn = RedisPool::Instance().getConnection();
+
 
     // 1. 检查手机号是否已注册
     std::string check_phone_sql =
@@ -131,13 +209,73 @@ bool AuthService::Register(const std::string& phone,
              << ", phone=" << phone << ", id=" << userId);
 
     mysql_free_result(id_res);
+
+    // 5. 预热缓存（用户名 + 手机号两个方向都写一下）
+    if(RedisConn) {
+        try{
+            json j;
+            j["id"]       = userId;
+            j["username"] = user;
+            j["phone"]    = phone;
+            j["password"] = pass;
+
+            std::string v = j.dump();
+
+            RedisConn->setEX("user:name:" + user, v, 3600);
+            RedisConn->setEX("user:pass:" + pass, v, 3600);
+
+            LOG_INFO("[AuthService::Register] warm cache for user=" << user
+                     << " phone=" << phone);
+        } catch (const std::exception& e) {
+            LOG_ERROR("[AuthService::Register] build cache json fail, user=" << user
+                      << " err=" << e.what());
+        }
+    }
+
+
     return true;
 }
 
+// ===================== 手机号登录（带缓存） =====================
 bool AuthService::loginByPhone(const std::string& phone,
                                int&               userId,
                                std::string&       usernameOut)
 {
+    std::string key = "user:phone" + phone;
+
+    // 1) 先走 Redis 缓存
+    auto redisConn = RedisPool::Instance().getConnection();
+    if (redisConn) {
+        std::string cached;
+        if(redisConn->get(key, cached)) {
+            if (cached == "null") {
+                LOG_INFO("[AuthService::loginByPhone] cache hit null, phone=" << phone);
+                return false;
+            }
+
+            try{
+                json j = json::parse(cached);
+                int cachedId = j.value("id", 0);
+                std::string cachedName = j.value("username", "");
+
+                if (cachedId > 0) {
+                    userId      = cachedId;
+                    usernameOut = cachedName;
+                    LOG_INFO("[AuthService::loginByPhone] cache hit, phone=" << phone
+                             << " id=" << userId
+                             << " username=" << usernameOut);
+                    return true;
+                }
+            }catch (const std::exception& e) {
+                LOG_ERROR("[AuthService::loginByPhone] parse cache fail, phone=" << phone
+                          << " err=" << e.what());
+            }
+        }
+    } else {
+        LOG_WARN("[AuthService::loginByPhone] redis not available, fallback to DB only");
+    }
+
+    // 2) 缓存未命中 → 查 MySQL
     auto conn = DBPool::Instance().getConnection();
     if (!conn) {
         LOG_ERROR("[AuthService::loginByPhone] ERROR: no db connection");
@@ -161,6 +299,12 @@ bool AuthService::loginByPhone(const std::string& phone,
     if (!row) {
         LOG_WARN("[AuthService::loginByPhone] no such phone: " << phone);
         mysql_free_result(res);
+
+        // 写一个短期空缓存，防止穿透
+        if (redisConn) {
+            redisConn->setEX(key, "null", 60);
+            LOG_INFO("[AuthService::loginByPhone] set null cache for phone=" << phone);
+        }
         return false;
     }
 
@@ -176,5 +320,22 @@ bool AuthService::loginByPhone(const std::string& phone,
              << ", username=" << usernameOut);
 
     mysql_free_result(res);
+
+    // 3) 写回 Redis 缓存
+    if (redisConn) {
+        try {
+            json j;
+            j["id"]       = userId;
+            j["username"] = usernameOut;
+            j["phone"]    = phone;
+
+            redisConn->setEX(key, j.dump(), 3600);
+            LOG_INFO("[AuthService::loginByPhone] set cache for phone=" << phone);
+        } catch (const std::exception& e) {
+            LOG_ERROR("[AuthService::loginByPhone] build cache json fail, phone=" << phone
+                      << " err=" << e.what());
+        }
+    }
+
     return true;
 }
