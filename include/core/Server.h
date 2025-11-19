@@ -4,6 +4,13 @@
 #include "chat/MessageHandler.h"
 #include <unordered_map>
 #include <string>
+
+/*这个Connection的成员有
+fd,inbuf,outbuf;
+
+wantWrite,shortClose;
+
+authed,userId,name,roomId*/
 struct Connection
 {
     /*为每个连接创建 Session（会话状态）*/
