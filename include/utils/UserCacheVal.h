@@ -10,6 +10,20 @@
 namespace utils {
 
 // 本地手机号 -> 用户信息 的 LRU + TTL 缓存
+/*struct Node {
+        std::string phone;  
+        int         id{0};
+        std::string username;
+        std::chrono::steady_clock::time_point expire;  
+    };
+    std::size_t capacity_;
+    int ttlSeconds_;
+
+    std::list<Node> cache_;
+
+    std::unordered_map<std::string, std::list<Node>::iterator> index_;
+
+    std::mutex mu_;*/
 class LocalUserCacheByPhone {
 public:
     // capacity = 最多缓存多少个手机号
@@ -110,35 +124,51 @@ private:
 
 
 // 简单 QPS 限流器：每秒最多 limit 次 allow() 返回 true
+// 一个简单的 QPS（每秒请求数）限流器：
+// 作用：在 1 秒内最多允许 limit_ 次 allow() 返回 true。
+// 用法：用于限制某些接口、某些用户、短信验证码、Redis 失败的降级保护等。
+
 class SimpleQpsLimiter {
 public:
+    // limitPerSec：每秒允许多少次请求
     explicit SimpleQpsLimiter(int limitPerSec)
         : limit_(limitPerSec), lastSec_(0), count_(0) {}
 
+    // 返回 true 表示本次请求通过；false 表示已经达到限流上限
     bool allow() {
         using namespace std::chrono;
+
+        // 1. 获取当前 steady_clock 的秒数（从程序启动到现在经过了多少秒）
+        //    用 steady_clock 而不是 system_clock，是因为 steady_clock 不受系统时间修改影响。
         auto now = steady_clock::now();
-        auto sec = duration_cast<seconds>(now.time_since_epoch()).count();
+        long long sec = duration_cast<seconds>(now.time_since_epoch()).count();
 
+        // 2. 多线程保护：多个线程同时调用 allow() 时需要互斥
         std::lock_guard<std::mutex> lk(mu_);
+
+        // 3. 如果进入了“新的一秒”，就重置计数器
         if (sec != lastSec_) {
-            lastSec_ = sec;
-            count_   = 0;
+            lastSec_ = sec;   // 更新当前秒
+            count_   = 0;     // 重新从 0 开始计数
         }
 
+        // 4. 检查本秒的请求数是否小于限制
         if (count_ < limit_) {
-            ++count_;
-            return true;
+            ++count_;         // 记录本秒已经通过一次
+            return true;      // 允许本次请求
         }
+
+        // 5. 已达到本秒 limit_ 次，拒绝
         return false;
     }
 
 private:
-    int        limit_;
-    long long  lastSec_;
-    int        count_;
-    std::mutex mu_;
+    int        limit_;   // 每秒最大允许通过的次数（QPS 限制）
+    long long  lastSec_; // 上一次允许请求的“秒编号”
+    int        count_;   // 当前秒已通过的次数
+    std::mutex mu_;      // 保护 lastSec_ 和 count_ 的锁（因为可能多线程访问）
 };
+
 
 // inline 全局对象（C++17 起可以这样写，避免多重定义）
 inline LocalUserCacheByPhone g_localUserCacheByPhone(1024, 30);
