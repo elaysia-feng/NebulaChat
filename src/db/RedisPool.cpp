@@ -1,5 +1,10 @@
 #include "db/RedisPool.h"
 #include "core/Logger.h"
+#include <atomic>
+
+namespace{
+    std::atomic<bool> g_redisDown{false};  // ★★ 新增：全局 Redis 状态标志
+}
 
 RedisPool& RedisPool::Instance()
 {
@@ -37,11 +42,16 @@ bool RedisPool::init(const std::string& host, int port, int poolSize)
             LOG_ERROR("[RedisPool::init] no connection created, init FAILED");
             inited_ = false;
             ok      = false;
+
+            g_redisDown.store(true);   // ★★ Redis 初始化失败 → DOWN
+
         } else {
             LOG_INFO("[RedisPool::init] init OK, success=" << success
                      << " / poolSize=" << poolSize_);
             inited_ = true;
             ok      = true;
+
+            g_redisDown.store(false);  // ★★ Redis 初始化成功 → UP
         }
     });
 
@@ -56,18 +66,22 @@ RedisConnPtr RedisPool::getConnection()
 {
     if (!inited_) {
         LOG_ERROR("[RedisPool::getConnection] RedisPool not inited");
+        g_redisDown.store(true);          // ★★ 不可用
         return nullptr;
     }
 
     RedisConnPtr conn;
     if (!pool_.Safepop(conn)) {
         LOG_WARN("[RedisPool::getConnection] Safepop failed (pool empty or stopped)");
+        g_redisDown.store(true);          // ★★ 获取连接失败 → DOWN
         return nullptr;
     }
 
     LOG_DEBUG("[RedisPool::getConnection] got redis connection from pool, raw="
               << conn.get());
-              
+
+    g_redisDown.store(false);             // ★★ 获取成功 → Redis UP
+
     /*这里仅仅是为了好看，
     因为是单例，所以不会存在指针悬空，
     如果不是单例的话（instance），
@@ -81,4 +95,10 @@ RedisConnPtr RedisPool::getConnection()
                   << conn.get());
         self->pool_.Safepush(conn);
     });
+}
+
+// ★★ 新增：提供 Redis 当前状态的查询接口
+bool RedisPool::IsDown()
+{
+    return g_redisDown.load();
 }

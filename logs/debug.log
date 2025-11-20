@@ -806,3 +806,35 @@
 2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152837580352
 2025-11-19 16:27:25 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 135152829187648
 2025-11-19 16:27:25 | DEBUG | [Reactor::stop] already stopped (running_ was false)
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=0 raw=0x6416d49548c0
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=1 raw=0x6416d4a597a0
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=2 raw=0x6416d4a71190
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=3 raw=0x6416d4a87e10
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=4 raw=0x6416d4a9e870
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=5 raw=0x6416d4ab52f0
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=6 raw=0x6416d4acbd70
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=7 raw=0x6416d4ae27f0
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=8 raw=0x6416d4af8a00
+2025-11-20 15:38:39 | DEBUG | [DBPool::init] created connection index=9 raw=0x6416d4b0e730
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=0 raw=0x6416d4b24490
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=1 raw=0x6416d4b238b0
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=2 raw=0x6416d4b24450
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=3 raw=0x6416d4b23c30
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=4 raw=0x6416d4b23d10
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=5 raw=0x6416d4b20670
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=6 raw=0x6416d4b20a10
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=7 raw=0x6416d4b20db0
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=8 raw=0x6416d4b21150
+2025-11-20 15:38:39 | DEBUG | [RedisPool::init] created redis connection index=9 raw=0x6416d4b214f0
+2025-11-20 15:38:39 | DEBUG | [ThreadPool::run] worker 0 started, id=139697204491840
+2025-11-20 15:38:39 | DEBUG | [ThreadPool::run] worker 1 started, id=139697196099136
+2025-11-20 15:38:39 | DEBUG | [ThreadPool::run] worker 2 started, id=139697187706432
+2025-11-20 15:38:39 | DEBUG | [ThreadPool::run] worker 3 started, id=139697179313728
+2025-11-20 15:38:39 | DEBUG | [Reactor::addFd] fd=29 events=0x1 useET=true
+2025-11-20 15:38:46 | DEBUG | [Reactor::wakeup] wakeup sent to evfd_=28
+2025-11-20 15:38:46 | DEBUG | [Reactor::loop] epoll_wait interrupted by signal, retry
+2025-11-20 15:38:46 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 139697204491840
+2025-11-20 15:38:46 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 139697196099136
+2025-11-20 15:38:46 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 139697187706432
+2025-11-20 15:38:46 | DEBUG | [ThreadPool::~ThreadPool] joining worker thread 139697179313728
+2025-11-20 15:38:46 | DEBUG | [Reactor::stop] already stopped (running_ was false)

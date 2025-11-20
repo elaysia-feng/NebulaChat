@@ -69,7 +69,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                         return resp.dump() + "\n";
                     }
 
-                    // B. MySQL 里按 phone 找用户
+                    // B.通过 AuthService 按 phone 找用户（内部会走本地缓存 + Redis + MySQL）
                     int         uid = 0;
                     std::string username;
                     if (!auth_.loginByPhone(phone, uid, username)) {

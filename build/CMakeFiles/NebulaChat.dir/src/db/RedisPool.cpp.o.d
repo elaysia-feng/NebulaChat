@@ -200,4 +200,5 @@ CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.o: \
  /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc /usr/include/c++/11/codecvt \
  /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
- /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h
+ /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/c++/11/atomic

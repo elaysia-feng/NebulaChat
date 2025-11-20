@@ -13,6 +13,8 @@ public:
 
     // 从池子中取一个连接（shared_ptr，自动归还）
     RedisConnPtr getConnection();
+    // Redis 是否不可用（init 失败 / getConnection 失败）
+    static bool IsDown();
 
 private:
     RedisPool()  = default;

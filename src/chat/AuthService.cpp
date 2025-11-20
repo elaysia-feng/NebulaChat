@@ -3,11 +3,12 @@
 #include "db/RedisPool.h"
 #include "core/Logger.h"
 #include "utils/Random.h"
+#include "utils/UserCacheVal.h"
 #include <string>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-
+using namespace utils;
 
 // ===================== 用户名 + 密码登录（带缓存） =====================
 
@@ -95,7 +96,7 @@ bool AuthService::login(const std::string& user,
         return false;
     }
     int         dbId   = std::stoi(row[0]);
-    std::string dbPass = row[2] ? row[2] : "";
+    std::string dbPass = row[1] ? row[1] : "";
     
     mysql_free_result(res);
      if (dbPass != pass) {
@@ -218,6 +219,7 @@ bool AuthService::Register(const std::string& phone,
     mysql_free_result(id_res);
 
     // 5. 预热缓存（用户名 + 手机号两个方向都写一下）
+       // 5. 预热缓存（用户名 + 手机号两个方向都写一下）
     if(RedisConn) {
         try{
             json j;
@@ -231,8 +233,9 @@ bool AuthService::Register(const std::string& phone,
             int baseTTL   = 3600;
             int randDelta = utils::RandInt(0, 600); // 0~600 秒
             int ttl       = baseTTL + randDelta;
-            RedisConn->setEX("user:name:" + user, v, ttl);
-            RedisConn->setEX("user:pass:" + pass, v, ttl);
+            RedisConn->setEX("user:name:"  + user,  v, ttl);
+            RedisConn->setEX("user:pass:"  + pass,  v, ttl);
+            RedisConn->setEX("user:phone:" + phone, v, ttl);
 
             LOG_INFO("[AuthService::Register] warm cache for user=" << user
                      << " phone=" << phone);
@@ -242,50 +245,72 @@ bool AuthService::Register(const std::string& phone,
         }
     }
 
+    // 注册成功后也在本地小缓存写一份，方便后面手机号登录直接命中
+    g_localUserCacheByPhone.put(phone, userId, user);
 
     return true;
 }
 
-// ===================== 手机号登录（带缓存） =====================
+
 bool AuthService::loginByPhone(const std::string& phone,
                                int&               userId,
                                std::string&       usernameOut)
 {
-    std::string key = "user:phone" + phone;
+    // ========== 0) 先查本地进程内的小缓存 ==========
+    if (g_localUserCacheByPhone.get(phone, userId, usernameOut)) {
+        LOG_INFO("[AuthService::loginByPhone] local cache hit, phone=" << phone
+                 << " id=" << userId << " username=" << usernameOut);
+        return true;
+    }
 
-    // 1) 先走 Redis 缓存
+    // 统一 key 规范：user:phone:<phone>
+    std::string key = "user:phone:" + phone;
+
+    // ========== 1) 再查 Redis ==========
     auto redisConn = RedisPool::Instance().getConnection();
     if (redisConn) {
         std::string cached;
-        if(redisConn->get(key, cached)) {
+        if (redisConn->get(key, cached)) {
             if (cached == "null") {
-                LOG_INFO("[AuthService::loginByPhone] cache hit null, phone=" << phone);
+                LOG_INFO("[AuthService::loginByPhone] redis cache null, phone=" << phone);
                 return false;
             }
 
-            try{
+            try {
                 json j = json::parse(cached);
-                int cachedId = j.value("id", 0);
+                int         cachedId   = j.value("id", 0);
                 std::string cachedName = j.value("username", "");
 
                 if (cachedId > 0) {
                     userId      = cachedId;
                     usernameOut = cachedName;
-                    LOG_INFO("[AuthService::loginByPhone] cache hit, phone=" << phone
+
+                    LOG_INFO("[AuthService::loginByPhone] redis cache hit, phone=" << phone
                              << " id=" << userId
                              << " username=" << usernameOut);
+
+                    // 命中 Redis 时，顺手写一份到本地缓存
+                    g_localUserCacheByPhone.put(phone, userId, usernameOut);
                     return true;
                 }
-            }catch (const std::exception& e) {
-                LOG_ERROR("[AuthService::loginByPhone] parse cache fail, phone=" << phone
+            } catch (const std::exception& e) {
+                LOG_ERROR("[AuthService::loginByPhone] parse redis json fail, phone=" << phone
                           << " err=" << e.what());
             }
         }
     } else {
-        LOG_WARN("[AuthService::loginByPhone] redis not available, fallback to DB only");
+        LOG_WARN("[AuthService::loginByPhone] redis not available, fallback to DB");
     }
 
-    // 2) 缓存未命中 → 查 MySQL
+    // ========== 2) Redis 没命中 → 要打 DB（Redis 挂了时做简单限流） ==========
+    if (RedisPool::IsDown()) {
+        if (!g_loginByPhoneLimiter.allow()) {
+            LOG_WARN("[AuthService::loginByPhone] system busy, reject by QPS limiter, phone="
+                     << phone);
+            return false;  // 上层可以返回“系统繁忙”
+        }
+    }
+
     auto conn = DBPool::Instance().getConnection();
     if (!conn) {
         LOG_ERROR("[AuthService::loginByPhone] ERROR: no db connection");
@@ -310,7 +335,7 @@ bool AuthService::loginByPhone(const std::string& phone,
         LOG_WARN("[AuthService::loginByPhone] no such phone: " << phone);
         mysql_free_result(res);
 
-        // 写一个短期空缓存，防止穿透
+        // 2.1 写一个短期 null 缓存（防穿透）
         if (redisConn) {
             int baseTTL   = 60;
             int randDelta = utils::RandInt(0, 60); // 0~60 秒
@@ -334,7 +359,7 @@ bool AuthService::loginByPhone(const std::string& phone,
 
     mysql_free_result(res);
 
-    // 3) 写回 Redis 缓存
+    // ========== 3) 回写 Redis + 本地缓存 ==========
     if (redisConn) {
         try {
             json j;
@@ -345,16 +370,21 @@ bool AuthService::loginByPhone(const std::string& phone,
             int baseTTL   = 3600;
             int randDelta = utils::RandInt(0, 600); // 0~600 秒
             int ttl       = baseTTL + randDelta;
+
             redisConn->setEX(key, j.dump(), ttl);
             LOG_INFO("[AuthService::loginByPhone] set cache for phone=" << phone);
         } catch (const std::exception& e) {
-            LOG_ERROR("[AuthService::loginByPhone] build cache json fail, phone=" << phone
+            LOG_ERROR("[AuthService::loginByPhone] build redis json fail, phone=" << phone
                       << " err=" << e.what());
         }
     }
 
+    // 不管 Redis 在不在，这里一定写一份到本地缓存
+    g_localUserCacheByPhone.put(phone, userId, usernameOut);
+
     return true;
 }
+
 
 bool AuthService::updateUsername(int userId,
                                  const std::string& newName,
@@ -390,8 +420,9 @@ bool AuthService::updateUsername(int userId,
         return false;
     }
 
-    oldNameOut = row[1] ? row[1] : "";
-    phoneOut   = row[2] ? row[2] : "";
+    // SELECT username, phone → row[0] 是 username, row[1] 是 phone
+    oldNameOut = row[0] ? row[0] : "";
+    phoneOut   = row[1] ? row[1] : "";
     mysql_free_result(res);
 
     // 2. 检查新用户名是否已被别人占用
@@ -427,13 +458,37 @@ bool AuthService::updateUsername(int userId,
     auto redisConn = RedisPool::Instance().getConnection();
     if (redisConn) {
         if (!oldNameOut.empty()){
-            redisConn->del("user:name" + oldNameOut);
+            redisConn->del("user:name:" + oldNameOut);
         }
         if(!phoneOut.empty()) {
-            redisConn->del("user:phone" + phoneOut);
+            // 删除旧的 phone 缓存
+            redisConn->del("user:phone:" + phoneOut);
+
+            // 重建一份新的 phone → (id, newName) 缓存，避免手机号登录时拿到旧用户名
+            try {
+                json j;
+                j["id"]       = userId;
+                j["username"] = newName;
+                j["phone"]    = phoneOut;
+
+                int baseTTL   = 3600;
+                int randDelta = utils::RandInt(0, 600);
+                int ttl       = baseTTL + randDelta;
+                redisConn->setEX("user:phone:" + phoneOut, j.dump(), ttl);
+            } catch (const std::exception& e) {
+                LOG_ERROR("[AuthService::updateUsername] rebuild phone cache fail, err="
+                          << e.what());
+            }
         }
         redisConn->del("user:id:" + std::to_string(userId));
-    }    
+    }
+
+    // 本地缓存同步更新：删掉旧的，再写一份新的
+    if (!phoneOut.empty()) {
+        g_localUserCacheByPhone.erase(phoneOut);
+        g_localUserCacheByPhone.put(phoneOut, userId, newName);
+    }
+
     return true;
 }
 
@@ -492,6 +547,9 @@ bool AuthService::resetPasswordByPhone(const std::string& phone,
         redisConn->del("user:phone:" + phone);
         redisConn->del("user:id:" + std::to_string(userId));
     }
+
+    // 修改密码后，本地手机号缓存也失效
+    g_localUserCacheByPhone.erase(phone);
 
     return true;
 }
