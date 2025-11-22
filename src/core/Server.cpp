@@ -314,16 +314,26 @@ void Server::onConnRead(Connection& conn) {
             std::string out = msgHandler_.handleMessage(*c, line);
 
             bool isClose = false;
+            bool isBroadcast = false;
+            int  roomId  = c->roomId;
+
             try {
                 json resp = json::parse(out);
                 isClose   = resp.value("close", false);
+                isBroadcast = resp.value("broadcast", false);
+                roomId = resp.value("roomId", roomId);
+
             } catch (const std::exception& e) {
                 LOG_ERROR("[Server::worker] json parse error on response for fd="
                           << fd << ": " << e.what());
             }
-            
+            if (isBroadcast) {
+                broadcastToRoom(roomId, out);
+            } else {
             // 写回事件一定要在 Server 线程安全里做
             postWrite(fd, std::move(out));
+            }
+            
             if (isClose) {
                 std::lock_guard<std::mutex> lock(conns_mtx_);
                 auto it = conns_.find(fd);
@@ -449,4 +459,26 @@ bool Server::setTcpNoDelay(int fd) {
         return false;
     }
     return true;
+}
+
+
+//按房间广播
+void Server::broadcastToRoom(int roomId, const std::string& data){
+    // 1) 先在锁内拿出所有需要广播的 fd，避免在持锁期间调用 postWrite（postWrite 自己也要锁）
+    std::vector<int> targets;
+
+    {
+        std::lock_guard<std::mutex> lock(conns_mtx_);
+        for(auto& kv : conns_){
+            Connection* c = kv.second.get();
+            if(!c->authed) continue;
+            if(c->roomId != roomId) continue;
+            targets.push_back(c->fd);
+        }         
+    }
+
+    // 2) 锁外循环调用 postWrite（内部自己会上锁、改 EPOLLOUT）
+    for(int fd : targets){
+        postWrite(fd, data);
+    }
 }

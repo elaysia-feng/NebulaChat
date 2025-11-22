@@ -122,8 +122,6 @@ private:
 };
 
 
-
-// 简单 QPS 限流器：每秒最多 limit 次 allow() 返回 true
 // 一个简单的 QPS（每秒请求数）限流器：
 // 作用：在 1 秒内最多允许 limit_ 次 allow() 返回 true。
 // 用法：用于限制某些接口、某些用户、短信验证码、Redis 失败的降级保护等。
@@ -171,6 +169,14 @@ private:
 
 
 // inline 全局对象（C++17 起可以这样写，避免多重定义）
+//本地缓存只用于“快速命中 + 避免一直打 Redis”
+// 它不是主要缓存，只是一个 加速层（L1 Cache）。
+// Redis 是主要缓存（L2）。
+// L1 设计理念就是 TTL 短一点：
+// 10 秒
+// 30 秒
+// 最多几分钟
+// 都是正常的。
 inline LocalUserCacheByPhone g_localUserCacheByPhone(1024, 30);
 inline SimpleQpsLimiter      g_loginByPhoneLimiter(1000);
 

@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/elias/vscode_code_all/NebulaChat/include -I/usr/include/mysql -I/usr/include/hiredis
 
-CXX_FLAGS =  -Wall -Wextra -std=gnu++17
+CXX_FLAGS =  -g -O0 -std=gnu++17
 

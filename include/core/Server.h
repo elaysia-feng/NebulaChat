@@ -84,6 +84,9 @@ EPOLLERR / EPOLLHUP → closeConn()
     bool setNonBlock(int fd);
     bool setTcpNoDelay(int fd);
 
+    // 新增：按房间广播
+    void broadcastToRoom(int roomId, const std::string& data);
+
 private:
     reactor& reactor_;
     ThreadPool* Threadpool_;

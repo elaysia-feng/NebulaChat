@@ -35,6 +35,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                     c.authed = true;
                     c.userId = uid;
                     c.name   = user;
+                    c.roomId = 1;
 
                     resp["ok"]  = true;
                     resp["msg"] = "login success";
@@ -82,6 +83,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                     c.authed = true;
                     c.userId = uid;
                     c.name   = username;
+                    c.roomId = 1;
 
                     resp["ok"]  = true;
                     resp["msg"] = "login success (sms)";
@@ -225,7 +227,62 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
             resp["ok"]  = false;
             resp["msg"] = "invalid step for reset_pass";
         }
+        // 加入/切换房间
+        else if (cmd == "join_room") {
+            if(!c.authed || c.userId <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "not authed";
+                return resp.dump() + "\n";
+            }
 
+            int newRoomId = rep.value("roomId", 1);
+            if (newRoomId <= 0) {newRoomId = 1;}
+
+            c.roomId = newRoomId;
+
+            resp["ok"]    = true;
+            resp["roomId"] = newRoomId;
+            resp["msg"]   = "join room success";
+        }
+        // 发送消息
+        else if (cmd == "send_msg") {
+            if (!c.authed || c.userId <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "not authed";
+                return resp.dump() + "\n";
+            }
+
+            std::string text = rep.value("text", "");
+            if (text.empty()) {
+                resp["ok"]  = false;
+                resp["msg"] = "text cannot be empty";
+                return resp.dump() + "\n";
+            }
+            
+            int roomId = c.roomId;
+            if(roomId <= 0) {
+                roomId = 1;
+            }
+
+            // 这里先只做内存广播 + 回包，不做 DB 持久化，后面加历史消息 + 缓存
+            resp["ok"]        = true;
+            resp["broadcast"] = true;      // 关键！告诉 Server：这是广播消息
+            resp["roomId"]    = roomId;
+            resp["fromId"]    = c.userId;
+            resp["fromName"]  = c.name;
+            resp["text"]      = text;
+
+            // 简单时间戳（秒），客户端要精确再说
+            resp["ts"]        = static_cast<long long>(
+            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+            );
+        }
+
+        // 拉取历史消息
+        else if(cmd == "get_history") {
+
+        } 
+        
         // ========= echo =========
         else if (cmd == "echo") {
             std::string msg = rep.value("msg", "");
