@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "SmsService.h"
-class Connection;
+
 
 class AuthService
 {

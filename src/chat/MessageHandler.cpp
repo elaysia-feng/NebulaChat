@@ -1,13 +1,16 @@
 #include "chat/MessageHandler.h"
-#include "core/Server.h"
+#include "chat/RoomManager.h"
 #include <iostream>
+#include <chrono>
+
+constexpr int MAX_ROOM_SIZE = 100;
 
 using json = nlohmann::json;
 
 std::string MessageHandler::handleMessage(Connection& c, const std::string& line) {
     json resp;
     try {
-        json rep = json::parse(line);
+        json        rep = json::parse(line);
         std::string cmd = rep.value("cmd", "");
 
         // ========= 鉴权 =========
@@ -35,14 +38,26 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                     c.authed = true;
                     c.userId = uid;
                     c.name   = user;
-                    c.roomId = 1;
+
+                    // 尝试进入 1 号房间
+                    auto& roomMgr = RoomManager::Instance();
+                    if (roomMgr.tryEnterRoom(1, MAX_ROOM_SIZE)) {
+                        c.roomId      = 1;
+                        resp["roomId"] = 1;
+                        resp["msg"]    = "login success";
+                    } else {
+                        c.roomId      = 0;  // 没有房间
+                        resp["roomId"] = 0;
+                        resp["msg"]    = "login success, but room 1 is full";
+                    }
 
                     resp["ok"]  = true;
-                    resp["msg"] = "login success";
                 } else {
                     resp["ok"]  = false;
                     resp["msg"] = "wrong username or password";
                 }
+
+                return resp.dump() + "\n";
             }
 
             // 2) 手机 + 短信验证码登录
@@ -59,7 +74,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 }
 
                 // step = 2 : 验证码 + 手机号登录
-                if (step == 2) {
+                else if (step == 2) {
                     std::string code = rep.value("code", "");
 
                     // A. 校验验证码（Redis）
@@ -71,7 +86,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                     }
 
                     // B.通过 AuthService 按 phone 找用户（内部会走本地缓存 + Redis + MySQL）
-                    int         uid = 0;
+                    int         uid      = 0;
                     std::string username;
                     if (!auth_.loginByPhone(phone, uid, username)) {
                         resp["ok"]  = false;
@@ -83,16 +98,33 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                     c.authed = true;
                     c.userId = uid;
                     c.name   = username;
-                    c.roomId = 1;
+
+                    // 尝试进入 1 号房间
+                    auto& roomMgr = RoomManager::Instance();
+                    if (roomMgr.tryEnterRoom(1, MAX_ROOM_SIZE)) {
+                        c.roomId      = 1;
+                        resp["roomId"] = 1;
+                        resp["msg"]    = "login success";
+                    } else {
+                        c.roomId      = 0;  // 没有房间
+                        resp["roomId"] = 0;
+                        resp["msg"]    = "login success, but room 1 is full";
+                    }
 
                     resp["ok"]  = true;
-                    resp["msg"] = "login success (sms)";
                     return resp.dump() + "\n";
                 }
 
+                // 其它 step 值非法
                 resp["ok"]  = false;
                 resp["msg"] = "invalid step for sms login";
+                return resp.dump() + "\n";
             }
+
+            // 其它 mode 非法
+            resp["ok"]  = false;
+            resp["msg"] = "invalid login mode";
+            return resp.dump() + "\n";
         }
 
         // ========= register（带短信验证码） =========
@@ -146,6 +178,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
 
             resp["ok"]  = false;
             resp["msg"] = "invalid step for register";
+            return resp.dump() + "\n";
         }
 
         // ========= update_name（改昵称，需要已登录） =========
@@ -179,6 +212,7 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 resp["ok"]  = false;
                 resp["msg"] = "update username failed";
             }
+            return resp.dump() + "\n";
         }
 
         // ========= reset_pass（忘记密码：手机号 + 短信验证码） =========
@@ -226,24 +260,49 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
 
             resp["ok"]  = false;
             resp["msg"] = "invalid step for reset_pass";
+            return resp.dump() + "\n";
         }
-        // 加入/切换房间
+
+        // 加入/切换房间（切换聊天室，带容量限制）
         else if (cmd == "join_room") {
-            if(!c.authed || c.userId <= 0) {
+            if (!c.authed || c.userId <= 0) {
                 resp["ok"]  = false;
                 resp["msg"] = "not authed";
                 return resp.dump() + "\n";
             }
 
             int newRoomId = rep.value("roomId", 1);
-            if (newRoomId <= 0) {newRoomId = 1;}
+            if (newRoomId <= 0) newRoomId = 1;
 
-            c.roomId = newRoomId;
+            int oldRoomId = c.roomId;
+            if (newRoomId == oldRoomId) {
+                // 已经在这个房间了
+                resp["ok"]     = true;
+                resp["roomId"] = newRoomId;
+                resp["msg"]    = "already in this room";
+                return resp.dump() + "\n";
+            }
 
-            resp["ok"]    = true;
+            auto& roomMgr = RoomManager::Instance();
+            if (!roomMgr.tryEnterRoom(newRoomId, MAX_ROOM_SIZE)) {
+                resp["ok"]     = false;
+                resp["msg"]    = "room is full";
+                resp["roomId"] = oldRoomId; // 保持原房间不变
+                return resp.dump() + "\n";
+            }
+
+            // 成功进入新房间后，再从旧房间退出（如果旧房间有效）
+            if (oldRoomId > 0) {
+                roomMgr.leaveRoom(oldRoomId);
+            }
+
+            c.roomId       = newRoomId;
+            resp["ok"]     = true;
             resp["roomId"] = newRoomId;
-            resp["msg"]   = "join room success";
+            resp["msg"]    = "join room success";
+            return resp.dump() + "\n";
         }
+
         // 发送消息
         else if (cmd == "send_msg") {
             if (!c.authed || c.userId <= 0) {
@@ -258,11 +317,9 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 resp["msg"] = "text cannot be empty";
                 return resp.dump() + "\n";
             }
-            
+
             int roomId = c.roomId;
-            if(roomId <= 0) {
-                roomId = 1;
-            }
+            if (roomId <= 0) roomId = 1;
 
             // 这里先只做内存广播 + 回包，不做 DB 持久化，后面加历史消息 + 缓存
             resp["ok"]        = true;
@@ -273,29 +330,40 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
             resp["text"]      = text;
 
             // 简单时间戳（秒），客户端要精确再说
-            resp["ts"]        = static_cast<long long>(
-            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())
+            resp["ts"] = static_cast<long long>(
+                std::chrono::system_clock::to_time_t(
+                    std::chrono::system_clock::now()
+                )
             );
+
+            return resp.dump() + "\n";
         }
 
-        // 拉取历史消息
-        else if(cmd == "get_history") {
+        // 拉取历史消息（后面做缓存击穿在这里挂钩）
+        else if (cmd == "get_history") {
+            // TODO: 这里后面接 Redis + 互斥锁防缓存击穿
+            resp["ok"]  = false;
+            resp["msg"] = "get_history not implemented";
+            return resp.dump() + "\n";
+        }
 
-        } 
-        
         // ========= echo =========
         else if (cmd == "echo") {
             std::string msg = rep.value("msg", "");
             resp["ok"]   = true;
             resp["data"] = msg;
+            return resp.dump() + "\n";
         }
 
         // ========= upper =========
         else if (cmd == "upper") {
             std::string msg = rep.value("msg", "");
-            for (auto& ch : msg) ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+            for (auto& ch : msg) {
+                ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+            }
             resp["ok"]   = true;
             resp["data"] = msg;
+            return resp.dump() + "\n";
         }
 
         // ========= quit =========
@@ -303,17 +371,18 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
             resp["ok"]    = true;
             resp["data"]  = "bye";
             resp["close"] = true;
+            return resp.dump() + "\n";
         }
 
         else {
             resp["ok"]  = false;
             resp["err"] = "unknown cmd";
+            return resp.dump() + "\n";
         }
 
     } catch (const std::exception& e) {
         resp["ok"]  = false;
         resp["err"] = e.what();
+        return resp.dump() + "\n";
     }
-
-    return resp.dump() + "\n";
 }

@@ -3,8 +3,10 @@
 #include <nlohmann/json.hpp>
 #include "chat/AuthService.h"
 #include "SmsService.h"
+#include "RoomManager.h"
+#include "utils/TypeConnect.h"
 
-struct Connection;  // 只需要前向声明
+using Connection = utils::Connection;
 
 class MessageHandler
 {

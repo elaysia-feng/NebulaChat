@@ -200,9 +200,10 @@ void Server::onAccept() {
             LOG_ERROR("[Server::onAccept] accept error: " << strerror(errno));
             break;
         }
-
+        //开一个字符数组，用来存放最终可读的 IP 字符串
         char ipstr[64] = {0};
         ::inet_ntop(AF_INET, &client_addr.sin_addr, ipstr, sizeof(ipstr));
+        //端口
         int cport = ntohs(client_addr.sin_port);
 
         std::cout << "[Server::onAccept] new connection fd=" << clientfd
@@ -224,7 +225,7 @@ void Server::onAccept() {
         conn->authed = false;
         conn->userId = 0;           // MYSQL已实现功能
         conn->name.clear();         // MYSQL已实现功能
-        conn->roomId = 0;           // 暂时不分房间,还没有实现的
+        conn->roomId = 0;           
         Connection* user_ptr = conn.get();
 
         {
@@ -243,7 +244,7 @@ void Server::onAccept() {
 }
 
 
-/*读客户端发送的东西，解析并回复*/
+/*读客户端发送的东西，解析*/
 void Server::onConnRead(Connection& conn) {
     char buff[1024];
     for (;;) {
@@ -277,17 +278,18 @@ void Server::onConnRead(Connection& conn) {
     // 行协议：按 '\n' 拆包，剥掉末尾 '\r'
     size_t pos = 0;
     for (;;) {
+        //找到换行
         auto nlocation = conn.inbuf.find('\n', pos);
         //npos->not position,没找到子串/字符
         if (nlocation == std::string::npos) {
             // 不完整，保留尚未处理的
             conn.inbuf.erase(0, pos);
-            break;
+            break;  // 当前数据还不足以组成一条完整消息
         }
 
         std::string line = conn.inbuf.substr(pos, nlocation - pos);
         if (!line.empty() && line.back() == '\r') line.pop_back();
-        pos = nlocation + 1;
+        pos = nlocation + 1;  // 继续找下一条
 
         LOG_DEBUG("[Server::onConnRead] fd=" << conn.fd
                   << " got one line: " << line);
@@ -347,7 +349,7 @@ void Server::onConnRead(Connection& conn) {
     }
 }
 
-/*把想回复给客户端的信息写进缓存区*/
+// 将 outbuf 中的数据尽可能写入客户端 socket（触发 TCP 发送）
 void Server::onConnWrite(Connection& c) {
     for (;;) {
         if (c.outbuf.empty()) break;
@@ -388,6 +390,9 @@ void Server::onConnWrite(Connection& c) {
 
 /*关闭客户端的连接*/
 void Server::closeConn(int fd) {
+    int roomId = 0;
+    bool authed = false;
+
     {
         std::lock_guard<std::mutex> lock(conns_mtx_);
         auto it = conns_.find(fd);
@@ -395,12 +400,20 @@ void Server::closeConn(int fd) {
             LOG_ERROR("[Server::closeConn] fd=" << fd << " not found in conns_");
             return;
         }
+        // 先把信息记下来，后面锁外用
+        roomId = it->second->roomId;
+        authed = it->second->authed;
     }
 
     LOG_INFO("[Server::closeConn] closing fd=" << fd);
 
     reactor_.delFd(fd);
     ::close(fd);
+    // 锁外更新房间人数，避免锁嵌套
+    if (authed) {
+        RoomManager::Instance().leaveRoom(roomId);
+    }
+
     {
         std::lock_guard<std::mutex> lock(conns_mtx_);
         conns_.erase(fd);
