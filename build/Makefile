@@ -153,6 +153,30 @@ src/chat/AuthService.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.s
 .PHONY : src/chat/AuthService.cpp.s
 
+src/chat/ChatHistory.o: src/chat/ChatHistory.cpp.o
+.PHONY : src/chat/ChatHistory.o
+
+# target to build an object file
+src/chat/ChatHistory.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/ChatHistory.cpp.o
+.PHONY : src/chat/ChatHistory.cpp.o
+
+src/chat/ChatHistory.i: src/chat/ChatHistory.cpp.i
+.PHONY : src/chat/ChatHistory.i
+
+# target to preprocess a source file
+src/chat/ChatHistory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/ChatHistory.cpp.i
+.PHONY : src/chat/ChatHistory.cpp.i
+
+src/chat/ChatHistory.s: src/chat/ChatHistory.cpp.s
+.PHONY : src/chat/ChatHistory.s
+
+# target to generate assembly for a file
+src/chat/ChatHistory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/chat/ChatHistory.cpp.s
+.PHONY : src/chat/ChatHistory.cpp.s
+
 src/chat/MessageHandler.o: src/chat/MessageHandler.cpp.o
 .PHONY : src/chat/MessageHandler.o
 
@@ -429,6 +453,9 @@ help:
 	@echo "... src/chat/AuthService.o"
 	@echo "... src/chat/AuthService.i"
 	@echo "... src/chat/AuthService.s"
+	@echo "... src/chat/ChatHistory.o"
+	@echo "... src/chat/ChatHistory.i"
+	@echo "... src/chat/ChatHistory.s"
 	@echo "... src/chat/MessageHandler.o"
 	@echo "... src/chat/MessageHandler.i"
 	@echo "... src/chat/MessageHandler.s"

@@ -292,6 +292,8 @@ CMakeFiles/NebulaChat.dir/src/main.cpp.o: \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h \
  /home/elias/vscode_code_all/NebulaChat/include/chat/SmsService.h \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/RoomManager.h \
+ /home/elias/vscode_code_all/NebulaChat/include/utils/TypeConnect.h \
  /home/elias/vscode_code_all/NebulaChat/include/db/RedisPool.h \
  /home/elias/vscode_code_all/NebulaChat/include/db/RedisConnection.h \
  /usr/include/hiredis/hiredis.h /usr/include/hiredis/read.h \

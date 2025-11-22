@@ -1,5 +1,6 @@
 #include "chat/MessageHandler.h"
 #include "chat/RoomManager.h"
+#include "chat/ChatHistory.h"
 #include <iostream>
 #include <chrono>
 
@@ -339,13 +340,41 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
             return resp.dump() + "\n";
         }
 
-        // 拉取历史消息（后面做缓存击穿在这里挂钩）
+        // 拉取历史消息（带 Redis 缓存 + 防缓存击穿）
         else if (cmd == "get_history") {
-            // TODO: 这里后面接 Redis + 互斥锁防缓存击穿
+            if (!c.authed || c.userId <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "not authed";
+                return resp.dump() + "\n";
+        }
+
+        int roomId = c.roomId;
+        if (roomId <= 0) {
             resp["ok"]  = false;
-            resp["msg"] = "get_history not implemented";
+            resp["msg"] = "not in any room";
             return resp.dump() + "\n";
         }
+
+        int limit = rep.value("limit", 10);
+        if (limit <= 0) {
+            resp["ok"]  = false;
+            resp["msg"] = "invalid limit";
+            return resp.dump() + "\n";
+        }
+
+            json history;
+        if (!chat::GetHistoryWithCache(roomId, limit, history)) {
+            resp["ok"]  = false;
+            resp["msg"] = "get history failed";
+            return resp.dump() + "\n";
+        }
+
+        resp["ok"]      = true;
+        resp["roomId"]  = roomId;
+        resp["history"] = history;
+        return resp.dump() + "\n";
+        }
+
 
         // ========= echo =========
         else if (cmd == "echo") {

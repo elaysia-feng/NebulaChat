@@ -49,6 +49,7 @@ add_executable(NebulaChat
     src/chat/AuthService.cpp
     src/chat/MessageHandler.cpp
     src/chat/SmsService.cpp
+    src/chat/ChatHistory.cpp
 
     src/db/DBconnection.cpp
     src/db/DBpool.cpp

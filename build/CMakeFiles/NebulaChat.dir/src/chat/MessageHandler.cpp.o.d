@@ -283,17 +283,10 @@ CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o: \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/elias/vscode_code_all/NebulaChat/include/chat/AuthService.h \
  /home/elias/vscode_code_all/NebulaChat/include/chat/SmsService.h \
- /home/elias/vscode_code_all/NebulaChat/include/core/Server.h \
- /home/elias/vscode_code_all/NebulaChat/include/core/reactor.h \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/RoomManager.h \
  /usr/include/c++/11/mutex /usr/include/c++/11/bits/std_mutex.h \
  /usr/include/c++/11/bits/unique_lock.h \
- /usr/include/x86_64-linux-gnu/sys/epoll.h \
- /usr/include/x86_64-linux-gnu/bits/epoll.h /usr/include/c++/11/atomic \
- /home/elias/vscode_code_all/NebulaChat/include/core/ThreadPool.h \
- /home/elias/vscode_code_all/NebulaChat/include/core/SafeQueue.h \
- /usr/include/c++/11/condition_variable /usr/include/c++/11/queue \
- /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
- /usr/include/c++/11/bits/deque.tcc /usr/include/c++/11/bits/stl_queue.h \
- /usr/include/c++/11/thread /usr/include/c++/11/bits/std_thread.h \
- /usr/include/c++/11/bits/this_thread_sleep.h \
+ /home/elias/vscode_code_all/NebulaChat/include/utils/TypeConnect.h \
+ /usr/include/c++/11/atomic \
+ /home/elias/vscode_code_all/NebulaChat/include/chat/ChatHistory.h \
  /usr/include/c++/11/iostream

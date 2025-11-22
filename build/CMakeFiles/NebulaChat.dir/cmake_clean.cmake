@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o"
   "CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o.d"
+  "CMakeFiles/NebulaChat.dir/src/chat/ChatHistory.cpp.o"
+  "CMakeFiles/NebulaChat.dir/src/chat/ChatHistory.cpp.o.d"
   "CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o"
   "CMakeFiles/NebulaChat.dir/src/chat/MessageHandler.cpp.o.d"
   "CMakeFiles/NebulaChat.dir/src/chat/SmsService.cpp.o"
