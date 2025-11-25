@@ -23,8 +23,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.o.d"
   "CMakeFiles/NebulaChat.dir/src/main.cpp.o"
   "CMakeFiles/NebulaChat.dir/src/main.cpp.o.d"
-  "CMakeFiles/NebulaChat.dir/src/utils/Random.cpp.o"
-  "CMakeFiles/NebulaChat.dir/src/utils/Random.cpp.o.d"
   "NebulaChat"
   "NebulaChat.pdb"
 )

@@ -40,8 +40,6 @@ message(STATUS "Found hiredis: ${HIREDIS_LIB}")
 add_executable(NebulaChat
     src/main.cpp
 
-    src/utils/Random.cpp
-
     src/core/ThreadPool.cpp
     src/core/Reactor.cpp
     src/core/Server.cpp

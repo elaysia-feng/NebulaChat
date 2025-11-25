@@ -9,30 +9,182 @@
 
 namespace utils {
 
-// 本地手机号 -> 用户信息 的 LRU + TTL 缓存
-/*struct Node {
-        std::string phone;  
+// ======================
+// 1. 用户名 -> 用户信息 LRU + TTL + 空值缓存
+// ======================
+class LocalUserByName {
+private:
+    struct Node {
+        std::string username;
+        int         id{0};
+        std::string password;   // 建议未来换成 passwordHash
+        std::chrono::steady_clock::time_point expire;
+        bool        isNull{false};
+    };
+
+    std::size_t capacity_;
+    int         ttlSeconds_;
+    std::list<Node> cache_;   // LRU 链表：front 最久未用，back 最近使用
+    std::unordered_map<std::string, std::list<Node>::iterator> index_;
+    std::mutex mu_;
+
+public:
+    LocalUserByName(std::size_t capacity, int ttlSeconds)
+        : capacity_(capacity), ttlSeconds_(ttlSeconds) {}
+
+    // 命中返回 true，并填充 idOut / passwordOut / isNullOut
+    bool get(const std::string& username,
+             int& idOut,
+             std::string& passwordOut,
+             bool& isNullOut)
+    {
+        std::lock_guard<std::mutex> lk(mu_);
+
+        auto it = index_.find(username);
+        if (it == index_.end()) {
+            return false;
+        }
+
+        auto now  = std::chrono::steady_clock::now();
+        Node& node = *(it->second);
+
+        // TTL 过期：删掉
+        if (now >= node.expire) {
+            cache_.erase(it->second);
+            index_.erase(it);
+            return false;
+        }
+
+        // LRU：命中，挪到链表尾部
+        cache_.splice(cache_.end(), cache_, it->second);
+
+        idOut       = node.id;
+        passwordOut = node.password;
+        isNullOut   = node.isNull;
+        return true;
+    }
+
+    // 写缓存：username -> (id, password)，isNull=false
+    void put(const std::string& username, int userId, const std::string& password) {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto now = std::chrono::steady_clock::now();
+
+        auto it = index_.find(username);
+        if (it != index_.end()) {
+            Node& node = *(it->second);
+            node.id       = userId;
+            node.password = password;
+            node.isNull   = false;
+            node.expire   = now + std::chrono::seconds(ttlSeconds_);
+            cache_.splice(cache_.end(), cache_, it->second);
+            return;
+        }
+
+        // 容量满：淘汰最久未用
+        if (index_.size() >= capacity_) {
+            const Node& oldest = cache_.front();
+            index_.erase(oldest.username);
+            cache_.pop_front();
+        }
+
+        Node node;
+        node.username = username;
+        node.id       = userId;
+        node.password = password;
+        node.isNull   = false;
+        node.expire   = now + std::chrono::seconds(ttlSeconds_);
+
+        cache_.push_back(std::move(node));
+        auto itNode = std::prev(cache_.end());
+        index_[username] = itNode;
+    }
+
+    // 写一个“空值缓存”
+    void putNull(const std::string& username) {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto now = std::chrono::steady_clock::now();
+
+        auto it = index_.find(username);
+        if (it != index_.end()) {
+            Node& node = *(it->second);
+            node.isNull = true;
+            node.expire = now + std::chrono::seconds(ttlSeconds_);
+            cache_.splice(cache_.end(), cache_, it->second);
+            return;
+        }
+
+        if (index_.size() >= capacity_) {
+            const Node& oldest = cache_.front();
+            index_.erase(oldest.username);
+            cache_.pop_front();
+        }
+
+        Node node;
+        node.username = username;
+        node.id       = 0;
+        node.password.clear();
+        node.isNull   = true;
+        node.expire   = now + std::chrono::seconds(ttlSeconds_);
+
+        cache_.push_back(std::move(node));
+        auto itNode = std::prev(cache_.end());
+        index_[username] = itNode;
+    }
+
+    void erase(const std::string& username) {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto it = index_.find(username);
+        if (it == index_.end()) return;
+        cache_.erase(it->second);
+        index_.erase(it);
+    }
+
+    // 简单版 isNull：会顺手做过期检查
+    bool isNull(const std::string& username) {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto it = index_.find(username);
+        if (it == index_.end()) return false;
+
+        auto now = std::chrono::steady_clock::now();
+        Node& node = *(it->second);
+        if (now >= node.expire) {
+            cache_.erase(it->second);
+            index_.erase(it);
+            return false;
+        }
+        return node.isNull;
+    }
+};
+
+
+// ======================
+// 2. 手机号 -> 用户信息 LRU + TTL + 空值缓存
+// ======================
+class LocalUserCacheByPhone {
+private:
+    struct Node {
+        std::string phone;
         int         id{0};
         std::string username;
-        std::chrono::steady_clock::time_point expire;  
+        bool        isNull{false};
+        std::chrono::steady_clock::time_point expire;
     };
+
     std::size_t capacity_;
-    int ttlSeconds_;
-
+    int         ttlSeconds_;
     std::list<Node> cache_;
-
     std::unordered_map<std::string, std::list<Node>::iterator> index_;
+    std::mutex mu_;
 
-    std::mutex mu_;*/
-class LocalUserCacheByPhone {
 public:
-    // capacity = 最多缓存多少个手机号
-    // ttlSeconds = 每个缓存存活时间（秒）
     LocalUserCacheByPhone(std::size_t capacity, int ttlSeconds)
         : capacity_(capacity), ttlSeconds_(ttlSeconds) {}
 
-    // 读缓存：命中返回 true，并填充 userId / usernameOut
-    bool get(const std::string& phone, int& userId, std::string& usernameOut) {
+    bool get(const std::string& phone,
+             int& userId,
+             std::string& usernameOut,
+             bool& isNullOut)
+    {
         std::lock_guard<std::mutex> lk(mu_);
 
         auto it = index_.find(phone);
@@ -41,50 +193,46 @@ public:
         auto now = std::chrono::steady_clock::now();
         Node& node = *(it->second);
 
-        // TTL 过期了：顺便删掉
         if (now >= node.expire) {
             cache_.erase(it->second);
             index_.erase(it);
             return false;
         }
 
-        // LRU：访问过的移动到链表尾部（表示“最近使用”）
         cache_.splice(cache_.end(), cache_, it->second);
 
         userId      = node.id;
         usernameOut = node.username;
+        isNullOut   = node.isNull;
         return true;
     }
 
-    // 写缓存：插入 / 覆盖 phone -> (id, username)
     void put(const std::string& phone, int userId, const std::string& username) {
         std::lock_guard<std::mutex> lk(mu_);
-
         auto now = std::chrono::steady_clock::now();
 
-        // 如果已经存在，更新并挪到尾部
         auto it = index_.find(phone);
         if (it != index_.end()) {
             Node& node = *(it->second);
             node.id       = userId;
             node.username = username;
+            node.isNull   = false;
             node.expire   = now + std::chrono::seconds(ttlSeconds_);
             cache_.splice(cache_.end(), cache_, it->second);
             return;
         }
 
-        // 容量满了：淘汰最久未使用的（链表头）
         if (index_.size() >= capacity_) {
             const Node& oldest = cache_.front();
             index_.erase(oldest.phone);
             cache_.pop_front();
         }
 
-        // 插入新节点到链表尾
         Node node;
         node.phone    = phone;
         node.id       = userId;
         node.username = username;
+        node.isNull   = false;
         node.expire   = now + std::chrono::seconds(ttlSeconds_);
 
         cache_.push_back(std::move(node));
@@ -92,7 +240,37 @@ public:
         index_[phone] = itNode;
     }
 
-    // 删除某个 phone 对应的缓存（比如改名 / 改密码时）
+    void putNull(const std::string& phone) {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto now = std::chrono::steady_clock::now();
+
+        auto it = index_.find(phone);
+        if (it != index_.end()) {
+            Node& node = *(it->second);
+            node.isNull = true;
+            node.expire = now + std::chrono::seconds(ttlSeconds_);
+            cache_.splice(cache_.end(), cache_, it->second);
+            return;
+        }
+
+        if (index_.size() >= capacity_) {
+            const Node& oldest = cache_.front();
+            index_.erase(oldest.phone);
+            cache_.pop_front();
+        }
+
+        Node node;
+        node.phone    = phone;
+        node.id       = 0;
+        node.username.clear();
+        node.isNull   = true;
+        node.expire   = now + std::chrono::seconds(ttlSeconds_);
+
+        cache_.push_back(std::move(node));
+        auto itNode = std::prev(cache_.end());
+        index_[phone] = itNode;
+    }
+
     void erase(const std::string& phone) {
         std::lock_guard<std::mutex> lk(mu_);
         auto it = index_.find(phone);
@@ -100,84 +278,47 @@ public:
         cache_.erase(it->second);
         index_.erase(it);
     }
-
-private:
-    struct Node {
-        std::string phone;  // 为了在淘汰时能从 index_ 里删掉
-        int         id{0};
-        std::string username;
-        std::chrono::steady_clock::time_point expire;  // 过期时间
-    };
-
-    std::size_t capacity_;
-    int ttlSeconds_;
-
-    // 链表：从前到后 = 最久未用 → 最近使用
-    std::list<Node> cache_;
-
-    // 索引：phone -> 链表节点
-    std::unordered_map<std::string, std::list<Node>::iterator> index_;
-
-    std::mutex mu_;
 };
 
 
-// 一个简单的 QPS（每秒请求数）限流器：
-// 作用：在 1 秒内最多允许 limit_ 次 allow() 返回 true。
-// 用法：用于限制某些接口、某些用户、短信验证码、Redis 失败的降级保护等。
-
+// ======================
+// 3. QPS 限流器（你原来的没啥大问题，先保留）
+// ======================
 class SimpleQpsLimiter {
 public:
-    // limitPerSec：每秒允许多少次请求
     explicit SimpleQpsLimiter(int limitPerSec)
         : limit_(limitPerSec), lastSec_(0), count_(0) {}
 
-    // 返回 true 表示本次请求通过；false 表示已经达到限流上限
     bool allow() {
         using namespace std::chrono;
-
-        // 1. 获取当前 steady_clock 的秒数（从程序启动到现在经过了多少秒）
-        //    用 steady_clock 而不是 system_clock，是因为 steady_clock 不受系统时间修改影响。
         auto now = steady_clock::now();
         long long sec = duration_cast<seconds>(now.time_since_epoch()).count();
 
-        // 2. 多线程保护：多个线程同时调用 allow() 时需要互斥
         std::lock_guard<std::mutex> lk(mu_);
 
-        // 3. 如果进入了“新的一秒”，就重置计数器
         if (sec != lastSec_) {
-            lastSec_ = sec;   // 更新当前秒
-            count_   = 0;     // 重新从 0 开始计数
+            lastSec_ = sec;
+            count_   = 0;
         }
 
-        // 4. 检查本秒的请求数是否小于限制
         if (count_ < limit_) {
-            ++count_;         // 记录本秒已经通过一次
-            return true;      // 允许本次请求
+            ++count_;
+            return true;
         }
-
-        // 5. 已达到本秒 limit_ 次，拒绝
         return false;
     }
 
 private:
-    int        limit_;   // 每秒最大允许通过的次数（QPS 限制）
-    long long  lastSec_; // 上一次允许请求的“秒编号”
-    int        count_;   // 当前秒已通过的次数
-    std::mutex mu_;      // 保护 lastSec_ 和 count_ 的锁（因为可能多线程访问）
+    int        limit_;
+    long long  lastSec_;
+    int        count_;
+    std::mutex mu_;
 };
 
 
-// inline 全局对象（C++17 起可以这样写，避免多重定义）
-//本地缓存只用于“快速命中 + 避免一直打 Redis”
-// 它不是主要缓存，只是一个 加速层（L1 Cache）。
-// Redis 是主要缓存（L2）。
-// L1 设计理念就是 TTL 短一点：
-// 10 秒
-// 30 秒
-// 最多几分钟
-// 都是正常的。
+// 全局实例
 inline LocalUserCacheByPhone g_localUserCacheByPhone(1024, 30);
-inline SimpleQpsLimiter      g_loginByPhoneLimiter(1000);
+inline SimpleQpsLimiter      g_loginLimiter(1000);
+inline LocalUserByName    g_localUserByName(1024, 30);
 
 } // namespace utils
