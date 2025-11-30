@@ -1,3 +1,4 @@
+#bin/bash
 #create 
 
 cd ~/vscode_code_all

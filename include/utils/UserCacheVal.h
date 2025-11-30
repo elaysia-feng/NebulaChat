@@ -1,5 +1,4 @@
 #pragma once
-
 #include <unordered_map>
 #include <list>
 #include <mutex>
@@ -17,7 +16,7 @@ private:
     struct Node {
         std::string username;
         int         id{0};
-        std::string password;   // 建议未来换成 passwordHash
+        std::string password;   // TODO未来换成 passwordHash
         std::chrono::steady_clock::time_point expire;
         bool        isNull{false};
     };

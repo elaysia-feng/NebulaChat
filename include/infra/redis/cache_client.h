@@ -1,8 +1,7 @@
 #pragma once 
 
-#include <infra/redis/redis_client.h>
 #include <nlohmann/json.hpp>
-
+#include "infra/redis/redis_client.h"
 #include <functional>
 #include <thread>
 #include <optional>
@@ -41,6 +40,10 @@ public:
      * - 查询失败 / 不存在 → 返回 std::nullopt
      */
     template <typename T>
+    /**
+     * @brief std::optional<T> 是返回类型
+     * 
+     */
     using OptionalLoader = std::function<std::optional<T>()>;
 
     /**

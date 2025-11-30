@@ -48,7 +48,7 @@ public:
      * @param value       写入的字符串值
      * @param ttlSeconds  过期时间（秒级）
      */
-    virtual void setNX(std::string_view key,
+    virtual bool setNxEx(std::string_view key,
                        std::string_view value,
                        Seconds ttlSeconds) = 0;
 

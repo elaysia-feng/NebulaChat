@@ -1,5 +1,4 @@
 #include "chat/AuthService.h"
-
 #include "db/DBpool.h"
 #include "db/RedisPool.h"
 #include "core/Logger.h"
