@@ -6,6 +6,7 @@
 
 #include <mysql/mysql.h>
 #include <mutex>
+#include <vector>
 
 namespace chat {
 
@@ -213,6 +214,25 @@ bool GetHistoryWithCache(int roomId,
 
     g_fallbackQps.fetch_sub(1);
     return true;    
+}
+
+void InvalidateHistoryCache(int roomId,
+                            const std::vector<int>& limitsHint)
+{
+    auto redisConn = RedisPool::Instance().getConnection();
+    if (!redisConn) {
+        return;
+    }
+
+    std::vector<int> limits = limitsHint;
+    if (limits.empty()) {
+        limits = {10, 20, 50, 100, 200};
+    }
+
+    for (int lim : limits) {
+        std::string key = "room:history:" + std::to_string(roomId) + ":" + std::to_string(lim);
+        redisConn->del(key);
+    }
 }
 
 } // namespace chat

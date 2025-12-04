@@ -1,0 +1,5 @@
+2025-11-30 17:35:40 | WARN | [AuthService::login] wrong password for user=Elias
+2025-11-30 17:37:35 | WARN | [AuthService::login] wrong password for user=Elias
+2025-11-30 17:37:46 | WARN | [AuthService::login] wrong password for user=Elias
+2025-11-30 17:54:54 | WARN | [AuthService::login] wrong password for user=Elias
+2025-11-30 17:56:00 | WARN | [AuthService::login] wrong password for user=Elias

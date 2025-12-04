@@ -311,4 +311,8 @@ CMakeFiles/NebulaChat.dir/src/chat/AuthService.cpp.o: \
  /usr/include/nlohmann/detail/conversions/to_chars.hpp \
  /usr/include/nlohmann/ordered_map.hpp \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
- /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
+ /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+ /usr/include/openssl/sha.h /usr/include/openssl/macros.h \
+ /usr/include/x86_64-linux-gnu/openssl/opensslconf.h \
+ /usr/include/x86_64-linux-gnu/openssl/configuration.h \
+ /usr/include/openssl/opensslv.h /usr/include/openssl/e_os2.h

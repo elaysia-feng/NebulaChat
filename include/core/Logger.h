@@ -4,6 +4,9 @@
 #include <mutex>
 #include <filesystem>
 #include <cstring>
+#include <sstream>
+#include <ctime>
+#include <cstdio>
 
 enum class LogLevel{
     INFO,
@@ -102,4 +105,3 @@ public:
 #define LOG_WARN(msg)  do{std::ostringstream oss; oss << msg; Logger::Instance().log(LogLevel::WARN, oss.str());} while (0);
 #define LOG_ERROR(msg)  do{std::ostringstream oss; oss << msg; Logger::Instance().log(LogLevel::ERROR, oss.str());} while (0);
 #define LOG_DEBUG(msg)  do{std::ostringstream oss; oss << msg; Logger::Instance().log(LogLevel::DEBUG, oss.str());} while (0);
-

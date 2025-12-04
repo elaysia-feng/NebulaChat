@@ -21,6 +21,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/NebulaChat.dir/src/db/RedisConnection.cpp.o.d"
   "CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.o"
   "CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.o.d"
+  "CMakeFiles/NebulaChat.dir/src/infra/redis/redis_client_impl.cpp.o"
+  "CMakeFiles/NebulaChat.dir/src/infra/redis/redis_client_impl.cpp.o.d"
   "CMakeFiles/NebulaChat.dir/src/main.cpp.o"
   "CMakeFiles/NebulaChat.dir/src/main.cpp.o.d"
   "NebulaChat"

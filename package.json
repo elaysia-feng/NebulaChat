@@ -1,0 +1,26 @@
+{
+  "name": "nebulachat",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "gateway.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elaysia-feng/NebulaChat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elaysia-feng/NebulaChat/issues"
+  },
+  "homepage": "https://github.com/elaysia-feng/NebulaChat#readme",
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}

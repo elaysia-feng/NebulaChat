@@ -6,9 +6,38 @@
 #include "utils/UserCacheVal.h"
 
 #include <nlohmann/json.hpp>
+#include <openssl/sha.h>
+#include <iomanip>
+#include <sstream>
 
 using json = nlohmann::json;
 using namespace utils;
+
+namespace {
+std::string sha256Hex(const std::string& plain) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(reinterpret_cast<const unsigned char*>(plain.data()),
+           plain.size(), hash);
+
+    std::ostringstream oss;
+    oss << std::hex << std::setfill('0');
+    for (unsigned char b : hash) {
+        oss << std::setw(2) << static_cast<int>(b);
+    }
+    return oss.str();
+}
+
+std::string escapeStr(MYSQL* raw, const std::string& in) {
+    if (!raw || in.empty()) return in;
+    std::string out;
+    out.resize(in.size() * 2 + 1);
+    unsigned long len = mysql_real_escape_string(
+        raw, out.data(), in.c_str(),
+        static_cast<unsigned long>(in.size()));
+    out.resize(len);
+    return out;
+}
+}
 
 // ===================== 用户名 + 密码登录 =====================
 //
@@ -20,14 +49,28 @@ bool AuthService::login(const std::string& user,
                         int&               userId)
 {
     std::string cachedPass;
+    std::string passHash = sha256Hex(pass);
     if (!loadUserByName(user, userId, cachedPass)) {
         // 用户不存在（本地 / Redis / DB 都确认没有）
         return false;
     }
 
-    if (cachedPass != pass) {
-        LOG_WARN("[AuthService::login] wrong password for user=" << user);
-        return false;
+    if (cachedPass != passHash) {
+        // 兼容旧数据：如果库里存的是明文，自动迁移为 hash
+        if (cachedPass == pass) {
+            if (auto conn = DBPool::Instance().getConnection()) {
+                std::string safeUser = escapeStr(conn->raw(), user);
+                std::string sql =
+                    "UPDATE users SET password = '" + passHash + "' "
+                    "WHERE username = '" + safeUser + "'";
+                conn->update(sql);
+            }
+            invalidateUserCacheByName(user);
+            g_localUserByName.put(user, userId, passHash);
+        } else {
+            LOG_WARN("[AuthService::login] wrong password for user=" << user);
+            return false;
+        }
     }
 
     LOG_INFO("[AuthService::login] user=" << user << " login success, id=" << userId);
@@ -71,11 +114,16 @@ bool AuthService::Register(const std::string& phone,
     }
 
     auto redisConn = RedisPool::Instance().getConnection();
+    MYSQL* raw = conn->raw();
+
+    std::string safePhone = escapeStr(raw, phone);
+    std::string safeUser  = escapeStr(raw, user);
+    std::string passHash  = sha256Hex(pass);
 
     // 1. 检查手机号是否已存在
     std::string check_phone_sql =
         "SELECT id FROM users "
-        "WHERE phone = '" + phone + "' "
+        "WHERE phone = '" + safePhone + "' "
         "LIMIT 1";
 
     LOG_DEBUG("[AuthService::Register] check phone SQL = " << check_phone_sql);
@@ -92,7 +140,7 @@ bool AuthService::Register(const std::string& phone,
     // 2. 检查用户名是否已存在
     std::string check_user_sql =
         "SELECT id FROM users "
-        "WHERE username = '" + user + "' "
+        "WHERE username = '" + safeUser + "' "
         "LIMIT 1";
 
     LOG_DEBUG("[AuthService::Register] check user SQL = " << check_user_sql);
@@ -109,7 +157,7 @@ bool AuthService::Register(const std::string& phone,
     // 3. 插入新用户
     std::string insert_sql =
         "INSERT INTO users(phone, username, password) "
-        "VALUES('" + phone + "', '" + user + "', '" + pass + "')";
+        "VALUES('" + safePhone + "', '" + safeUser + "', '" + passHash + "')";
 
     LOG_DEBUG("[AuthService::Register] insert SQL = " << insert_sql);
 
@@ -121,7 +169,7 @@ bool AuthService::Register(const std::string& phone,
     // 4. 再查一次 id
     std::string select_sql =
         "SELECT id FROM users "
-        "WHERE phone = '" + phone + "' "
+        "WHERE phone = '" + safePhone + "' "
         "LIMIT 1";
 
     LOG_DEBUG("[AuthService::Register] select SQL = " << select_sql);
@@ -152,13 +200,12 @@ bool AuthService::Register(const std::string& phone,
             j["id"]       = userId;
             j["username"] = user;
             j["phone"]    = phone;
-            j["password"] = pass;   // 示例；生产环境建议改为 hash
+            j["password"] = passHash;
 
             std::string v   = j.dump();
             int ttl         = utils::MakeTtlWithJitter(3600, 600);
 
             redisConn->setEX("user:name:"  + user,  v, ttl);
-            redisConn->setEX("user:pass:"  + pass,  v, ttl);   // 暂时未用，可预留
             redisConn->setEX("user:phone:" + phone, v, ttl);
 
             LOG_INFO("[AuthService::Register] warm cache for user=" << user
@@ -192,6 +239,8 @@ bool AuthService::updateUsername(int                userId,
         LOG_ERROR("[AuthService::updateUsername] no db connection");
         return false;
     }
+    MYSQL* raw = conn->raw();
+    std::string safeNewName = escapeStr(raw, newName);
 
     // 1. 查当前 username + phone
     std::string query_sql =
@@ -218,7 +267,7 @@ bool AuthService::updateUsername(int                userId,
     // 2. 检查新用户名是否被其他用户占用
     std::string check_sql =
         "SELECT id FROM users "
-        "WHERE username = '" + newName + "' "
+        "WHERE username = '" + safeNewName + "' "
         "AND id <> " + std::to_string(userId) +
         " LIMIT 1";
 
@@ -233,7 +282,7 @@ bool AuthService::updateUsername(int                userId,
 
     // 3. 更新数据库
     std::string update_sql =
-        "UPDATE users SET username = '" + newName + "' "
+        "UPDATE users SET username = '" + safeNewName + "' "
         "WHERE id = " + std::to_string(userId);
 
     if (!conn->update(update_sql)) {
@@ -286,7 +335,7 @@ bool AuthService::resetPasswordByPhone(const std::string& phone,
     // 1. 先根据手机号查出用户 id + username
     std::string query_sql =
         "SELECT id, username FROM users "
-        "WHERE phone = '" + phone + "' "
+        "WHERE phone = '" + escapeStr(conn->raw(), phone) + "' "
         "LIMIT 1";
 
     MYSQL_RES* res = conn->query(query_sql);
@@ -307,8 +356,9 @@ bool AuthService::resetPasswordByPhone(const std::string& phone,
     mysql_free_result(res);
 
     // 2. 更新密码
+    std::string passHash = sha256Hex(newPass);
     std::string update_sql =
-        "UPDATE users SET password = '" + newPass + "' "
+        "UPDATE users SET password = '" + passHash + "' "
         "WHERE id = " + std::to_string(userId);
 
     if (!conn->update(update_sql)) {
@@ -399,9 +449,12 @@ bool AuthService::loadUserByName(const std::string& username,
         return false;
     }
 
+    MYSQL* raw = conn->raw();
+    std::string safeUser = escapeStr(raw, username);
+
     std::string query_sql =
         "SELECT id, password FROM users "
-        "WHERE username = '" + username + "' "
+        "WHERE username = '" + safeUser + "' "
         "LIMIT 1";
 
     MYSQL_RES* res = conn->query(query_sql);
@@ -519,9 +572,11 @@ bool AuthService::loadUserByPhone(const std::string& phone,
         return false;
     }
 
+    MYSQL* raw = conn->raw();
+    std::string safePhone = escapeStr(raw, phone);
     std::string sql =
         "SELECT id, username FROM users "
-        "WHERE phone = '" + phone + "' "
+        "WHERE phone = '" + safePhone + "' "
         "LIMIT 1";
 
     MYSQL_RES* res = conn->query(sql);

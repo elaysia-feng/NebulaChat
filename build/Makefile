@@ -393,6 +393,30 @@ src/db/RedisPool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/db/RedisPool.cpp.s
 .PHONY : src/db/RedisPool.cpp.s
 
+src/infra/redis/redis_client_impl.o: src/infra/redis/redis_client_impl.cpp.o
+.PHONY : src/infra/redis/redis_client_impl.o
+
+# target to build an object file
+src/infra/redis/redis_client_impl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/infra/redis/redis_client_impl.cpp.o
+.PHONY : src/infra/redis/redis_client_impl.cpp.o
+
+src/infra/redis/redis_client_impl.i: src/infra/redis/redis_client_impl.cpp.i
+.PHONY : src/infra/redis/redis_client_impl.i
+
+# target to preprocess a source file
+src/infra/redis/redis_client_impl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/infra/redis/redis_client_impl.cpp.i
+.PHONY : src/infra/redis/redis_client_impl.cpp.i
+
+src/infra/redis/redis_client_impl.s: src/infra/redis/redis_client_impl.cpp.s
+.PHONY : src/infra/redis/redis_client_impl.s
+
+# target to generate assembly for a file
+src/infra/redis/redis_client_impl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NebulaChat.dir/build.make CMakeFiles/NebulaChat.dir/src/infra/redis/redis_client_impl.cpp.s
+.PHONY : src/infra/redis/redis_client_impl.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -459,6 +483,9 @@ help:
 	@echo "... src/db/RedisPool.o"
 	@echo "... src/db/RedisPool.i"
 	@echo "... src/db/RedisPool.s"
+	@echo "... src/infra/redis/redis_client_impl.o"
+	@echo "... src/infra/redis/redis_client_impl.i"
+	@echo "... src/infra/redis/redis_client_impl.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

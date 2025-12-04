@@ -6,11 +6,16 @@
 #include <cstdlib>
 #include <ctime>
 #include <mutex>
+#include <unordered_map>
+#include <chrono>
 
 namespace {
     const int SMS_CODE_LEN        = 6;
     const int SMS_EXPIRE_SECONDS  = 60;   // 验证码有效期
+    const int SMS_RESEND_COOLDOWN = 30;   // 同一手机号最小重发间隔
     std::once_flag g_randInitFlag;
+    std::unordered_map<std::string, std::chrono::steady_clock::time_point> g_lastSend;
+    std::mutex g_sendMtx;
 }
 
 bool SmsService::isPhoneValid(const std::string& phone)
@@ -43,6 +48,21 @@ SmsResult SmsService::sendCode(const std::string& phone)
         return r;
     }
 
+    {
+        std::lock_guard<std::mutex> lk(g_sendMtx);
+        auto now = std::chrono::steady_clock::now();
+        auto it  = g_lastSend.find(phone);
+        if (it != g_lastSend.end()) {
+            auto diff = std::chrono::duration_cast<std::chrono::seconds>(now - it->second).count();
+            if (diff < SMS_RESEND_COOLDOWN) {
+                r.ok  = false;
+                r.msg = "request too frequent, wait a bit";
+                return r;
+            }
+        }
+        g_lastSend[phone] = now;
+    }
+
     auto conn = RedisPool::Instance().getConnection();
     if (!conn) {
         r.ok  = false;
@@ -59,12 +79,12 @@ SmsResult SmsService::sendCode(const std::string& phone)
         return r;
     }
 
-    // // 这里模拟“发送短信”：真实环境下可以换成短信网关 HTTP 调用
-    // LOG_INFO("[SmsService::sendCode] send sms code phone=" << phone
-    //          << " code=" << code);
+    // 这里只在服务端日志里记录验证码，客户端不回显
+    LOG_INFO("[SmsService::sendCode] send sms code phone=" << phone
+             << " code=" << code);
 
     r.ok  = true;
-    r.msg = code;
+    r.msg = "code sent";
     return r;
 }
 

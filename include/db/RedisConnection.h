@@ -1,3 +1,6 @@
+// RedisConnection.h
+#pragma once
+
 #include <hiredis/hiredis.h>
 #include <string>
 #include <memory>

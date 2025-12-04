@@ -36,6 +36,9 @@ if(NOT HIREDIS_LIB)
 endif()
 message(STATUS "Found hiredis: ${HIREDIS_LIB}")
 
+find_package(OpenSSL REQUIRED)
+message(STATUS "Found OpenSSL: ${OPENSSL_VERSION}")
+
 # sources
 add_executable(NebulaChat
     src/main.cpp
@@ -53,6 +56,8 @@ add_executable(NebulaChat
     src/db/DBpool.cpp
     src/db/RedisConnection.cpp
     src/db/RedisPool.cpp
+
+    src/infra/redis/redis_client_impl.cpp
 )
 
 # link
@@ -61,4 +66,5 @@ target_link_libraries(NebulaChat
         Threads::Threads
         ${HIREDIS_LIB}        # <--- 链接 hiredis
         ${MYSQLCLIENT_LIB}    # <--- 链接 mysqlclient
+        OpenSSL::Crypto
 )

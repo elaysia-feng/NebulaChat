@@ -337,6 +337,14 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 )
             );
 
+            // 持久化并清理缓存（若失败仅记录日志，不影响即时广播）
+            try {
+                chat::SaveMessage(roomId, c.userId, c.name, text);
+                chat::InvalidateHistoryCache(roomId);
+            } catch (const std::exception& e) {
+                std::cerr << "[send_msg] persist failed: " << e.what() << std::endl;
+            }
+
             return resp.dump() + "\n";
         }
 
@@ -346,33 +354,63 @@ std::string MessageHandler::handleMessage(Connection& c, const std::string& line
                 resp["ok"]  = false;
                 resp["msg"] = "not authed";
                 return resp.dump() + "\n";
-        }
+            }
 
-        int roomId = c.roomId;
-        if (roomId <= 0) {
-            resp["ok"]  = false;
-            resp["msg"] = "not in any room";
-            return resp.dump() + "\n";
-        }
+            int roomId = c.roomId;
+            if (roomId <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "not in any room";
+                return resp.dump() + "\n";
+            }
 
-        int limit = rep.value("limit", 10);
-        if (limit <= 0) {
-            resp["ok"]  = false;
-            resp["msg"] = "invalid limit";
-            return resp.dump() + "\n";
-        }
+            int limit = rep.value("limit", 10);
+            if (limit <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "invalid limit";
+                return resp.dump() + "\n";
+            }
 
             json history;
-        if (!chat::GetHistoryWithCache(roomId, limit, history)) {
-            resp["ok"]  = false;
-            resp["msg"] = "get history failed";
+            if (!chat::GetHistoryWithCache(roomId, limit, history)) {
+                resp["ok"]  = false;
+                resp["msg"] = "get history failed";
+                return resp.dump() + "\n";
+            }
+
+            resp["ok"]      = true;
+            resp["roomId"]  = roomId;
+            resp["history"] = history;
             return resp.dump() + "\n";
         }
 
-        resp["ok"]      = true;
-        resp["roomId"]  = roomId;
-        resp["history"] = history;
-        return resp.dump() + "\n";
+        // 房间列表（实时人数）
+        else if (cmd == "list_rooms") {
+            auto rooms = RoomManager::Instance().snapshot();
+            resp["ok"]    = true;
+            resp["rooms"] = json::array();
+            for (auto& kv : rooms) {
+                json item;
+                item["roomId"] = kv.first;
+                item["size"]   = kv.second;
+                resp["rooms"].push_back(std::move(item));
+            }
+            return resp.dump() + "\n";
+        }
+
+        // 主动离开房间
+        else if (cmd == "leave_room") {
+            if (!c.authed || c.userId <= 0) {
+                resp["ok"]  = false;
+                resp["msg"] = "not authed";
+                return resp.dump() + "\n";
+            }
+            if (c.roomId > 0) {
+                RoomManager::Instance().leaveRoom(c.roomId);
+                c.roomId = 0;
+            }
+            resp["ok"]  = true;
+            resp["msg"] = "leave room success";
+            return resp.dump() + "\n";
         }
 
 

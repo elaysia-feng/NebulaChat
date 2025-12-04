@@ -491,3 +491,196 @@
 2025-11-22 15:20:32 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x566668ce5500
 2025-11-22 15:20:32 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x566668ce9190
 2025-11-22 15:20:32 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x566668ce38e0
+2025-11-30 17:32:41 | INFO | [DBPool::init] start init: host=127.0.0.1 port=3306 user=root db=serverlogin poolSize=10
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb8825b0
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb8825b0
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb939ed0
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb939ed0
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb985040
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb985040
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb99cc80
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb99cc80
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb9b2d00
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb9b2d00
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb9c97a0
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb9c97a0
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb9e0220
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb9e0220
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bb9f6ca0
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bb9f6ca0
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bba0d720
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bba0d720
+2025-11-30 17:32:41 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x6027bba23930
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-11-30 17:32:41 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x6027bba23930
+2025-11-30 17:32:41 | INFO | [DBPool::init] init OK, success=10 / poolSize=10
+2025-11-30 17:32:41 | INFO | [RedisPool::init] start init: host=127.0.0.1 port=6379 poolSize=10
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3f190
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba398e0
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba39c20
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba39f80
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3a2e0
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3a680
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3aa20
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3adc0
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3b160
+2025-11-30 17:32:41 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x6027bba3b500
+2025-11-30 17:32:41 | INFO | [RedisPool::init] init OK, success=10 / poolSize=10
+2025-11-30 17:32:41 | INFO | [Reactor::ctor] create reactor, MaxEvent=1024 useET=true
+2025-11-30 17:32:41 | INFO | [Reactor::ctor] reactor init OK, epfd=27 evfd=28
+2025-11-30 17:32:41 | INFO | [ThreadPool::ThreadPool] create thread pool, threads=4, maxTasks=1024
+2025-11-30 17:32:41 | INFO | [ThreadPool::run] starting workers, count=4
+2025-11-30 17:32:41 | INFO | [Reactor::setDispatcher] dispatcher set OK
+2025-11-30 17:32:41 | INFO | [Server::start] Server listening on port 8888 (ET=on)
+2025-11-30 17:32:41 | INFO | [Reactor::loop] event loop start
+2025-11-30 17:32:41 | INFO | [ThreadPool::RunPool] worker thread 129359748789824 start
+2025-11-30 17:32:41 | INFO | [ThreadPool::RunPool] worker thread 129359740397120 start
+2025-11-30 17:32:41 | INFO | [ThreadPool::RunPool] worker thread 129359723611712 start
+2025-11-30 17:32:41 | INFO | [ThreadPool::RunPool] worker thread 129359732004416 start
+2025-11-30 17:35:40 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:38212
+2025-11-30 17:35:40 | INFO | [RedisConnection::get] key not exist: user:name:Elias
+2025-11-30 17:35:40 | INFO | [loadUserByName] DB hit, user=Elias id=1
+2025-11-30 17:37:30 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-11-30 17:37:30 | INFO | [Server::closeConn] closing fd=30
+2025-11-30 17:37:30 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-11-30 17:37:35 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:36210
+2025-11-30 17:37:35 | INFO | [loadUserByName] redis hit, user=Elias id=1
+2025-11-30 17:37:44 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-11-30 17:37:44 | INFO | [Server::closeConn] closing fd=30
+2025-11-30 17:37:44 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-11-30 17:37:46 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:60772
+2025-11-30 17:37:46 | INFO | [loadUserByName] local hit, user=Elias id=1
+2025-11-30 17:54:27 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-11-30 17:54:27 | INFO | [Server::closeConn] closing fd=30
+2025-11-30 17:54:27 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-11-30 17:54:54 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:45166
+2025-11-30 17:54:54 | INFO | [loadUserByName] redis hit, user=Elias id=1
+2025-11-30 17:55:22 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-11-30 17:55:22 | INFO | [Server::closeConn] closing fd=30
+2025-11-30 17:55:22 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-11-30 17:56:00 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:59736
+2025-11-30 17:56:00 | INFO | [loadUserByName] redis hit, user=Elias id=1
+2025-11-30 17:56:34 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-11-30 17:56:34 | INFO | [Server::closeConn] closing fd=30
+2025-11-30 17:56:34 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-11-30 17:58:39 | INFO | [Server::stop] stopping server on port 8888
+2025-11-30 17:58:39 | INFO | [Reactor::delFd] fd=29 removed from epoll and users_
+2025-11-30 17:58:39 | INFO | [Server::stop] listenFd_ closed
+2025-11-30 17:58:39 | INFO | [Server::stop] closing 0 active connections
+2025-11-30 17:58:39 | INFO | [Reactor::stop] set running_=false, wakeup loop
+2025-11-30 17:58:39 | INFO | [Reactor::loop] event loop exit
+2025-11-30 17:58:39 | INFO | [Server::stop] server already stopped
+2025-11-30 17:58:39 | INFO | [ThreadPool::~ThreadPool] stopping thread pool...
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker 129359732004416 exits because pool stopped
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker thread 129359732004416 exit
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker 129359723611712 exits because pool stopped
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker thread 129359723611712 exit
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker 129359748789824 exits because pool stopped
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker thread 129359748789824 exit
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker 129359740397120 exits because pool stopped
+2025-11-30 17:58:39 | INFO | [ThreadPool::RunPool] worker thread 129359740397120 exit
+2025-11-30 17:58:39 | INFO | [ThreadPool::~ThreadPool] all worker threads joined
+2025-11-30 17:58:39 | INFO | [Reactor::dtor] destroy reactor
+2025-11-30 17:58:39 | INFO | [Reactor::dtor] evfd_ closed: 28
+2025-11-30 17:58:39 | INFO | [Reactor::dtor] epfd_ closed: 27
+2025-11-30 17:58:39 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x6027bba3a2e0
+2025-11-30 17:58:39 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x6027bba3a680
+2025-11-30 17:58:39 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x6027bba3aa20
+2025-11-30 17:58:39 | INFO | [RedisConnection::~RedisCo2025-12-04 15:51:05 | INFO | [DBPool::init] start init: host=127.0.0.1 port=3306 user=root db=serverlogin poolSize=10
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d83486e5b0
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d83486e5b0
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d834925ed0
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d834925ed0
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d834971040
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d834971040
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d834988c80
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d834988c80
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d83499ed00
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d83499ed00
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d8349b57a0
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d8349b57a0
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d8349cc220
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d8349cc220
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d8349e2ca0
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d8349e2ca0
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d8349f9720
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d8349f9720
+2025-12-04 15:51:05 | INFO | [DBconnection::DBconnection] mysql_init OK, handle=0x63d834a0f930
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] try connect: host=127.0.0.1 port=3306 user=root dbname=serverlogin charset=utf8mb4
+2025-12-04 15:51:05 | INFO | [DBconnection::connect] MySQL connect OK, handle=0x63d834a0f930
+2025-12-04 15:51:05 | INFO | [DBPool::init] init OK, success=10 / poolSize=10
+2025-12-04 15:51:05 | INFO | [RedisPool::init] start init: host=127.0.0.1 port=6379 poolSize=10
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a2b190
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a258e0
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a25c20
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a25f80
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a262e0
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a26680
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a26a20
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a26dc0
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a27160
+2025-12-04 15:51:05 | INFO | [RedisConnection::connect] connect OK, host=127.0.0.1 port=6379 ctx=0x63d834a27500
+2025-12-04 15:51:05 | INFO | [RedisPool::init] init OK, success=10 / poolSize=10
+2025-12-04 15:51:05 | INFO | [Reactor::ctor] create reactor, MaxEvent=1024 useET=true
+2025-12-04 15:51:05 | INFO | [Reactor::ctor] reactor init OK, epfd=27 evfd=28
+2025-12-04 15:51:05 | INFO | [ThreadPool::ThreadPool] create thread pool, threads=4, maxTasks=1024
+2025-12-04 15:51:05 | INFO | [ThreadPool::run] starting workers, count=4
+2025-12-04 15:51:05 | INFO | [Reactor::setDispatcher] dispatcher set OK
+2025-12-04 15:51:05 | INFO | [ThreadPool::RunPool] worker thread 128991799277120 start
+2025-12-04 15:51:05 | INFO | [ThreadPool::RunPool] worker thread 128991790884416 start
+2025-12-04 15:51:05 | INFO | [ThreadPool::RunPool] worker thread 128991782491712 start
+2025-12-04 15:51:05 | INFO | [Server::start] Server listening on port 8888 (ET=on)
+2025-12-04 15:51:05 | INFO | [Reactor::loop] event loop start
+2025-12-04 15:51:05 | INFO | [ThreadPool::RunPool] worker thread 128991774099008 start
+2025-12-04 16:05:16 | INFO | [Server::onAccept] new connection fd=30 from 127.0.0.1:54588
+2025-12-04 16:05:24 | INFO | [Server::onConnRead] fd=30 peer closed
+2025-12-04 16:05:24 | INFO | [Server::closeConn] closing fd=30
+2025-12-04 16:05:24 | INFO | [Reactor::delFd] fd=30 removed from epoll and users_
+2025-12-04 16:09:29 | INFO | [Server::stop] stopping server on port 8888
+2025-12-04 16:09:29 | INFO | [Reactor::delFd] fd=29 removed from epoll and users_
+2025-12-04 16:09:29 | INFO | [Server::stop] listenFd_ closed
+2025-12-04 16:09:29 | INFO | [Server::stop] closing 0 active connections
+2025-12-04 16:09:29 | INFO | [Reactor::stop] set running_=false, wakeup loop
+2025-12-04 16:09:29 | INFO | [Reactor::loop] event loop exit
+2025-12-04 16:09:29 | INFO | [Server::stop] server already stopped
+2025-12-04 16:09:29 | INFO | [ThreadPool::~ThreadPool] stopping thread pool...
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker 128991782491712 exits because pool stopped
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker thread 128991782491712 exit
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker 128991790884416 exits because pool stopped
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker thread 128991790884416 exit
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker 128991774099008 exits because pool stopped
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker thread 128991774099008 exit
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker 128991799277120 exits because pool stopped
+2025-12-04 16:09:29 | INFO | [ThreadPool::RunPool] worker thread 128991799277120 exit
+2025-12-04 16:09:29 | INFO | [ThreadPool::~ThreadPool] all worker threads joined
+2025-12-04 16:09:29 | INFO | [Reactor::dtor] destroy reactor
+2025-12-04 16:09:29 | INFO | [Reactor::dtor] evfd_ closed: 28
+2025-12-04 16:09:29 | INFO | [Reactor::dtor] epfd_ closed: 27
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a2b190
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a258e0
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a25c20
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a25f80
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a262e0
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a26680
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a26a20
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a26dc0
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a27160
+2025-12-04 16:09:29 | INFO | [RedisConnection::~RedisConnection] closing redis connection, ctx=0x63d834a27500

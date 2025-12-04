@@ -44,4 +44,9 @@ public:
         if(it == roomCounts_.end()) return 0;
         return it->second;
     }
+
+    std::unordered_map<int, int> snapshot(){
+        std::lock_guard<std::mutex> lock(mtx_);
+        return roomCounts_;
+    }
 };

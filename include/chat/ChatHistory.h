@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 #include <atomic>
+#include <vector>
 
 namespace chat {
 
@@ -18,5 +19,9 @@ void SaveMessage(int roomId,
 bool GetHistoryWithCache(int roomId,
                          int limit,
                          json& historyOut);
+
+// 删除/刷新某个房间的历史缓存（通常在写入新消息后调用）
+void InvalidateHistoryCache(int roomId,
+                            const std::vector<int>& limitsHint = {});
 
 }
