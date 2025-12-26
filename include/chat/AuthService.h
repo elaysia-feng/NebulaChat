@@ -6,7 +6,7 @@
 class AuthService
 {
 private:
-    // 建议成员名小写开头，避免和类型名太像
+    
     SmsService sms_;
 
     // 按用户名加载用户认证信息（只负责取数据，不校验密码）
